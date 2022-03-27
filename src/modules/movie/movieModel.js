@@ -15,25 +15,10 @@ module.exports = {
         }
       );
     }),
-  searchSortMovie: (sort, searchName) =>
+  getAllMovie: (searchName, sort, limit, offset) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM movie ORDER BY ? ?",
-        [searchName, sort],
-        (error, result) => {
-          if (!error) {
-            resolve(result);
-          } else {
-            reject(new Error(error.sqlMessage));
-          }
-        }
-      );
-    }),
-  getAllMovie: (limit, offset) =>
-    new Promise((resolve, reject) => {
-      connection.query(
-        "SELECT * FROM movie LIMIT ? OFFSET ?",
-        [limit, offset],
+        `SELECT * FROM movie WHERE name LIKE '%${searchName}%' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset};`,
         (error, result) => {
           if (!error) {
             resolve(result);

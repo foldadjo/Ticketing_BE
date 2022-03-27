@@ -6,9 +6,11 @@ const scheduleModel = require("./scheduleModel");
 module.exports = {
   getAllSchedule: async (request, response) => {
     try {
-      let { page, limit } = request.query;
+      let { page, limit, searchName, searchLocation, sort } = request.query;
+
       page = Number(page);
       limit = Number(limit);
+
       const offset = page * limit - limit;
       const totalData = await scheduleModel.getCountSchedule();
       const totalPage = Math.ceil(totalData / limit);
@@ -20,15 +22,22 @@ module.exports = {
         totalData,
       };
 
-      //   const { sort, location } = request.query;
-      //   const searchSchedule = await scheduleModel.searchSortSchedule();
-      //   const searchInfo = {
-      //     sort,
-      //     location,
-      //     searchSchedule,
-      //   };
+      const result = await scheduleModel.getAllSchedule(
+        searchName,
+        searchLocation,
+        sort,
+        limit,
+        offset
+      );
 
-      const result = await scheduleModel.getAllSchedule(limit, offset);
+      if (result.length <= 0) {
+        return helperWrapper.response(
+          response,
+          404,
+          `Search schedule by '${searchName}' is not found`,
+          null
+        );
+      }
 
       return helperWrapper.response(
         response,
@@ -36,7 +45,6 @@ module.exports = {
         "Success get data !",
         result,
         pageInfo
-        // searchInfo
       );
     } catch (error) {
       console.log(error);

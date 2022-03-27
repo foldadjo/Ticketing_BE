@@ -19,9 +19,10 @@ module.exports = {
   },
   getAllMovie: async (request, response) => {
     try {
-      let { page, limit } = request.query;
+      let { page, limit, searchName, sort } = request.query;
       page = Number(page);
       limit = Number(limit);
+
       const offset = page * limit - limit;
       const totalData = await movieModel.getCountMovie();
       const totalPage = Math.ceil(totalData / limit);
@@ -32,8 +33,22 @@ module.exports = {
         limit,
         totalData,
       };
-      const result = await movieModel.getAllMovie(limit, offset);
 
+      const result = await movieModel.getAllMovie(
+        searchName,
+        sort,
+        limit,
+        offset
+      );
+
+      if (result.length <= 0) {
+        return helperWrapper.response(
+          response,
+          404,
+          `Search movie by '${searchName}' is not found`,
+          null
+        );
+      }
       return helperWrapper.response(
         response,
         200,

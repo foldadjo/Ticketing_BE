@@ -15,25 +15,10 @@ module.exports = {
         }
       );
     }),
-  //   searchSortSchedule: (searchLocation, sort) =>
-  //     new Promise((resolve, reject) => {
-  //       connection.query(
-  //         "SELECT * FROM schedule WHERE location = ? ORDER BY movieId  ?;",
-  //         [searchLocation, sort],
-  //         (error, result) => {
-  //           if (!error) {
-  //             resolve(result);
-  //           } else {
-  //             reject(new Error(error.sqlMessage));
-  //           }
-  //         }
-  //       );
-  //     }),
-  getAllSchedule: (limit, offset) =>
+  getAllSchedule: (searchName, searhLocation, sort, limit, offset) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM schedule LIMIT ? OFFSET ?",
-        [limit, offset],
+        `SELECT s.id, m.name, s.time, s.premiere, s.location, s.price FROM movie AS m INNER JOIN schedule AS s ON m.id = s.movieId WHERE m.name LIKE '%${searchName}%' AND s.location LIKE '%${searhLocation}%' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset};`,
         (error, result) => {
           if (!error) {
             resolve(result);
