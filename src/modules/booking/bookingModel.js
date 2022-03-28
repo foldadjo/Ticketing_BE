@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const connection = require("../../config/mysql");
 
 module.exports = {
@@ -6,8 +7,6 @@ module.exports = {
       const query = connection.query(
         "INSERT INTO booking SET ? ",
         data,
-        // `SELECT b.id, b.scheduleId, b.dateBooking, b.timeBooking, b.timeBooking, b.paymentMethod, b.totalPayment, bs.seat
-        // FROM booking AS b INNER JOIN bookingseat AS bs ON b.id = bs.bookingId;`,
         (error, result) => {
           if (!error) {
             const newResult = {
@@ -26,8 +25,6 @@ module.exports = {
     new Promise((resolve, reject) => {
       const query = connection.query(
         "INSERT INTO bookingseat SET ?",
-        // SELECT b.id, b.scheduleId, b.dateBooking, b.timeBooking, b.timeBooking, b.paymentMethod, b.totalPayment, bs.seat
-        // FROM booking AS b INNER JOIN bookingseat AS bs ON b.id = bs.bookingId;`,
         seat,
         (error, result) => {
           if (!error) {
@@ -43,22 +40,36 @@ module.exports = {
       );
       console.log(query.sql);
     }),
-  //   updateSchedule: (id, data) =>
-  //     new Promise((resolve, reject) => {
-  //       connection.query(
-  //         "UPDATE booking SET ? WHERE id = ?",
-  //         [data, id],
-  //         (error) => {
-  //           if (!error) {
-  //             const newResult = {
-  //               id,
-  //               ...data,
-  //             };
-  //             resolve(newResult);
-  //           } else {
-  //             reject(new Error(error.sqlMessage));
-  //           }
+  // getBooking: () =>
+  //   new Promise((resolve, reject) => {
+  //     connection.query(
+  //       `SELECT b.id, b.scheduleId, b.dateBooking, b.timeBooking, b.timeBooking, b.paymentMethod, b.totalPayment, bs.seat
+  //       FROM booking AS b INNER JOIN bookingseat AS bs ON b.id = bs.bookingId;`,
+  //       (error, result) => {
+  //         if (!error) {
+  //           resolve(result);
+  //         } else {
+  //           reject(new Error(error.sqlMessage));
   //         }
-  //       );
-  //     }),
+  //       }
+  //     );
+  //   }),
+  // updateSchedule: (id, data) =>
+  //   new Promise((resolve, reject) => {
+  //     connection.query(
+  //       "UPDATE booking SET ? WHERE id = ?",
+  //       [data, id],
+  //       (error) => {
+  //         if (!error) {
+  //           const newResult = {
+  //             id,
+  //             ...data,
+  //           };
+  //           resolve(newResult);
+  //         } else {
+  //           reject(new Error(error.sqlMessage));
+  //         }
+  //       }
+  //     );
+  //   }),
 };

@@ -24,7 +24,6 @@ module.exports = {
         ? (searchLocation = searchLocation)
         : (searchLocation = "");
       typeof sort === "string" ? (sort = sort) : (sort = "schedule.id");
-      console.log(sort);
 
       const offset = page * limit - limit;
       const totalData = await scheduleModel.getCountSchedule(
@@ -94,8 +93,9 @@ module.exports = {
   },
   createSchedule: async (request, response) => {
     try {
-      const { movieId, premiere, price, location, dateStart, dateEnd, time } =
+      let { movieId, premiere, price, location, dateStart, dateEnd, time } =
         request.body;
+
       const setData = {
         movieId,
         premiere,

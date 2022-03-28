@@ -16,3 +16,13 @@ connection.connect((error) => {
 });
 
 module.exports = connection;
+
+// using dotenv to manage my ENV
+const http = require("http");
+
+require("dotenv").config();
+// {path: path/filename}
+
+// process.env.PORT
+const port = process.env.PORT;
+const host = process.env.HOST;

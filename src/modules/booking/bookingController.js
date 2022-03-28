@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-inner-declarations */
 const helperWrapper = require("../../helpers/wrapper");
 // --
 const bookingModel = require("./bookingModel");
@@ -22,24 +24,26 @@ module.exports = {
         scheduleId,
         dateBooking,
         timeBooking,
-        totalTicket,
-        totalPayment,
         paymentMethod,
+        totalPayment,
         statusPayment,
+        totalTicket,
         statusUsed,
       };
 
-      const bookingId = scheduleId;
-      const seatData = {
-        bookingId,
-        seat,
-      };
-      const result = await bookingModel.createBooking(setData);
-      await bookingModel.createBookingseat(seatData);
+      const booking = await bookingModel.createBooking(setData);
+
+      const bookingId = booking.id;
+
+      await seat.map(async (seat) => {
+        const seatData = { bookingId, seat };
+        await bookingModel.createBookingseat(seatData);
+        return seat;
+      });
+      const result = request.body;
 
       return helperWrapper.response(response, 200, "Success Booking", result);
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
