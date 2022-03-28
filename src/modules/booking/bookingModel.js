@@ -40,36 +40,66 @@ module.exports = {
       );
       console.log(query.sql);
     }),
-  // getBooking: () =>
-  //   new Promise((resolve, reject) => {
-  //     connection.query(
-  //       `SELECT b.id, b.scheduleId, b.dateBooking, b.timeBooking, b.timeBooking, b.paymentMethod, b.totalPayment, bs.seat
-  //       FROM booking AS b INNER JOIN bookingseat AS bs ON b.id = bs.bookingId;`,
-  //       (error, result) => {
-  //         if (!error) {
-  //           resolve(result);
-  //         } else {
-  //           reject(new Error(error.sqlMessage));
-  //         }
-  //       }
-  //     );
-  //   }),
-  // updateSchedule: (id, data) =>
-  //   new Promise((resolve, reject) => {
-  //     connection.query(
-  //       "UPDATE booking SET ? WHERE id = ?",
-  //       [data, id],
-  //       (error) => {
-  //         if (!error) {
-  //           const newResult = {
-  //             id,
-  //             ...data,
-  //           };
-  //           resolve(newResult);
-  //         } else {
-  //           reject(new Error(error.sqlMessage));
-  //         }
-  //       }
-  //     );
-  //   }),
+  getBookingById: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM booking INNER JOIN bookingseat ON booking.id = bookingseat.bookingId 
+        INNER JOIN schedule ON booking.scheduleId = schedule.id INNER JOIN movie ON schedule.movieId = movie.id WHERE booking.id = ${id};`,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
+  getSeatBooking: (scheduleId, dateBooking, timeBooking) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT bookingseat.seat FROM booking INNER JOIN bookingseat ON booking.id = bookingseat.bookingId 
+        WHERE booking.scheduleId = ${scheduleId} AND booking.dateBooking LIKE '%${dateBooking}%' AND
+        booking.timeBooking LIKE '%${timeBooking}%'`,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
+  getDashboard: (scheduleId, movieId, location) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT MONTH(booking.dateBooking) AS month, SUM(booking.totalPayment) AS total FROM booking 
+        INNER JOIN schedule ON booking.scheduleId = schedule.id WHERE booking.scheduleId LIKE '%${scheduleId}%' 
+        AND schedule.movieId LIKE '%${movieId}%' AND schedule.location LIKE '%${location}%' GROUP BY month;`,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
+  updateStatusBooking: (id, data) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE booking SET ? WHERE id = ?",
+        [data, id],
+        (error) => {
+          if (!error) {
+            const newResult = {
+              id,
+              ...data,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
 };
