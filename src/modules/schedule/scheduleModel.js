@@ -1,11 +1,13 @@
+/* eslint-disable no-console */
 // const { promise } = require("../../config/mysql");
 const connection = require("../../config/mysql");
 
 module.exports = {
-  getCountSchedule: () =>
+  getCountSchedule: (searchMovieId, searhLocation) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT COUNT (*) AS total FROM schedule",
+        `SELECT COUNT (*) AS total FROM schedule WHERE movieId LIKE '%${searchMovieId}%' 
+        AND location LIKE '%${searhLocation}%'`,
         (error, result) => {
           if (!error) {
             resolve(result[0].total);
@@ -15,10 +17,11 @@ module.exports = {
         }
       );
     }),
-  getAllSchedule: (searchName, searhLocation, sort, limit, offset) =>
+  getAllSchedule: (searchMovieId, searhLocation, sort, limit, offset) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `SELECT s.id, m.name, s.time, s.premiere, s.location, s.price FROM movie AS m INNER JOIN schedule AS s ON m.id = s.movieId WHERE m.name LIKE '%${searchName}%' AND s.location LIKE '%${searhLocation}%' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset};`,
+        `SELECT * FROM schedule INNER JOIN movie ON schedule.movieId = movie.id WHERE schedule.movieId LIKE '%${searchMovieId}%' 
+        AND schedule.location LIKE '%${searhLocation}%' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset};`,
         (error, result) => {
           if (!error) {
             resolve(result);
@@ -31,7 +34,7 @@ module.exports = {
   getScheduleById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM schedule WHERE id = ?",
+        "SELECT * FROM schedule INNER JOIN movie ON schedule.movieId = movie.id WHERE schedule.id = ?",
         id,
         (error, result) => {
           if (!error) {

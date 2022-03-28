@@ -3,20 +3,6 @@ const helperWrapper = require("../../helpers/wrapper");
 const bookingModel = require("./bookingModel");
 // --
 module.exports = {
-  getHello: async (request, response) => {
-    try {
-      //   response.status(200);
-      //   response.send("Hello World");
-      return helperWrapper.response(
-        response,
-        200,
-        "Success get data !",
-        "Hello World"
-      );
-    } catch (error) {
-      return helperWrapper.response(response, 400, "Bad Request", null);
-    }
-  },
   createBooking: async (request, response) => {
     try {
       const {
@@ -29,7 +15,7 @@ module.exports = {
       } = request.body;
 
       const totalTicket = seat.length;
-      const statusPayment = "Active";
+      const statusPayment = "Success";
       const statusUsed = "Active";
 
       const setData = {
@@ -42,13 +28,16 @@ module.exports = {
         statusPayment,
         statusUsed,
       };
+
+      const bookingId = scheduleId;
+      const seatData = {
+        bookingId,
+        seat,
+      };
       const result = await bookingModel.createBooking(setData);
-      return helperWrapper.response(
-        response,
-        200,
-        "Success create data !",
-        result
-      );
+      await bookingModel.createBookingseat(seatData);
+
+      return helperWrapper.response(response, 200, "Success Booking", result);
     } catch (error) {
       console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);

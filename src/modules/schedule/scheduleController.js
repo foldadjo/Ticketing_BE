@@ -1,3 +1,8 @@
+/* eslint-disable no-self-assign */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable prefer-const */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-restricted-globals */
 const helperWrapper = require("../../helpers/wrapper");
 
 // --
@@ -6,13 +11,26 @@ const scheduleModel = require("./scheduleModel");
 module.exports = {
   getAllSchedule: async (request, response) => {
     try {
-      let { page, limit, searchName, searchLocation, sort } = request.query;
+      let { page, limit, searchMovieId, searchLocation, sort } = request.query;
+      // default value
+      page = isNaN(page) || page == 0 ? (page = 1) : (page = Number(page));
+      limit =
+        isNaN(limit) || limit == 0 ? (limit = 10) : (limit = Number(limit));
 
-      page = Number(page);
-      limit = Number(limit);
+      typeof searchMovieId === "string"
+        ? (searchMovieId = searchMovieId)
+        : (searchMovieId = "");
+      typeof searchLocation === "string"
+        ? (searchLocation = searchLocation)
+        : (searchLocation = "");
+      typeof sort === "string" ? (sort = sort) : (sort = "schedule.id");
+      console.log(sort);
 
       const offset = page * limit - limit;
-      const totalData = await scheduleModel.getCountSchedule();
+      const totalData = await scheduleModel.getCountSchedule(
+        searchMovieId,
+        searchLocation
+      );
       const totalPage = Math.ceil(totalData / limit);
 
       const pageInfo = {
@@ -23,7 +41,7 @@ module.exports = {
       };
 
       const result = await scheduleModel.getAllSchedule(
-        searchName,
+        searchMovieId,
         searchLocation,
         sort,
         limit,
@@ -34,7 +52,7 @@ module.exports = {
         return helperWrapper.response(
           response,
           404,
-          `Search schedule by '${searchName}' is not found`,
+          `Search schedule is not found`,
           null
         );
       }
@@ -47,7 +65,6 @@ module.exports = {
         pageInfo
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

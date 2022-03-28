@@ -1,3 +1,8 @@
+/* eslint-disable no-self-assign */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable eqeqeq */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable prefer-const */
 const helperWrapper = require("../../helpers/wrapper");
 // --
 const movieModel = require("./movieModel");
@@ -20,11 +25,18 @@ module.exports = {
   getAllMovie: async (request, response) => {
     try {
       let { page, limit, searchName, sort } = request.query;
-      page = Number(page);
-      limit = Number(limit);
+      // default value
+      page = isNaN(page) || page == 0 ? (page = 1) : (page = Number(page));
+      limit =
+        isNaN(limit) || limit == 0 ? (limit = 5) : (limit = Number(limit));
+
+      typeof searchName === "string"
+        ? (searchName = searchName)
+        : (searchName = "");
+      typeof sort === "string" ? (sort = sort) : (sort = "id ASC");
 
       const offset = page * limit - limit;
-      const totalData = await movieModel.getCountMovie();
+      const totalData = await movieModel.getCountMovie(searchName);
       const totalPage = Math.ceil(totalData / limit);
 
       const pageInfo = {
@@ -57,7 +69,6 @@ module.exports = {
         pageInfo
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

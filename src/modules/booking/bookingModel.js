@@ -4,13 +4,36 @@ module.exports = {
   createBooking: (data) =>
     new Promise((resolve, reject) => {
       const query = connection.query(
-        "INSERT INTO booking SET ?",
+        "INSERT INTO booking SET ? ",
         data,
+        // `SELECT b.id, b.scheduleId, b.dateBooking, b.timeBooking, b.timeBooking, b.paymentMethod, b.totalPayment, bs.seat
+        // FROM booking AS b INNER JOIN bookingseat AS bs ON b.id = bs.bookingId;`,
         (error, result) => {
           if (!error) {
             const newResult = {
               id: result.insertId,
               ...data,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+      console.log(query.sql);
+    }),
+  createBookingseat: (seat) =>
+    new Promise((resolve, reject) => {
+      const query = connection.query(
+        "INSERT INTO bookingseat SET ?",
+        // SELECT b.id, b.scheduleId, b.dateBooking, b.timeBooking, b.timeBooking, b.paymentMethod, b.totalPayment, bs.seat
+        // FROM booking AS b INNER JOIN bookingseat AS bs ON b.id = bs.bookingId;`,
+        seat,
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              id: result.insertId,
+              ...seat,
             };
             resolve(newResult);
           } else {
