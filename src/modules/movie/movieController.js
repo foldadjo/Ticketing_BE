@@ -37,8 +37,8 @@ module.exports = {
         ? (sort = "id ASC")
         : (sort = sort); // harus sesuai dengan objek, kalo tidak ada bakal error
 
-      const offset = page * limit - limit;
       const totalData = await movieModel.getCountMovie(searchName);
+      const offset = page * limit - limit;
       const totalPage = Math.ceil(totalData / limit);
 
       const pageInfo = {
