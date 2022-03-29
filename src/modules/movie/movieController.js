@@ -33,7 +33,7 @@ module.exports = {
       typeof searchName === "string"
         ? (searchName = searchName)
         : (searchName = "");
-      typeof sort === "string" ? (sort = sort) : (sort = "id ASC");
+      typeof sort === "string" ? (sort = sort) : (sort = "id ASC"); // harus sesuai dengan objek, kalo tidak ada bakal error
 
       const offset = page * limit - limit;
       const totalData = await movieModel.getCountMovie(searchName);
