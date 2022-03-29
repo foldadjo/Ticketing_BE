@@ -23,7 +23,9 @@ module.exports = {
       typeof searchLocation === "string"
         ? (searchLocation = searchLocation)
         : (searchLocation = "");
-      typeof sort === "string" ? (sort = sort) : (sort = "schedule.id");
+      typeof sort != "string" || sort === ""
+        ? (sort = "schedule.id")
+        : (sort = sort); // harus sesuai dengan objek, kalo tidak ada bakal error
 
       const offset = page * limit - limit;
       const totalData = await scheduleModel.getCountSchedule(
