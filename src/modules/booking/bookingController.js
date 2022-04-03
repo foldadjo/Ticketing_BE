@@ -15,11 +15,15 @@ module.exports = {
         seat,
       } = request.body;
 
+      const user = request.decodeToken;
+      const userId = user.id;
+
       const totalTicket = seat.length;
       const statusPayment = "Success";
       const statusUsed = "Active";
 
       const setData = {
+        userId,
         scheduleId,
         dateBooking,
         timeBooking,
@@ -51,36 +55,13 @@ module.exports = {
       const { id } = request.params;
 
       const allData = await bookingModel.getBookingById(id);
-      const scheduleId = allData.map((item) => item.scheduleId)[0];
-      const dateBooking = allData.map((item) => item.dateBooking)[0];
-      const timeBooking = allData.map((item) => item.timeBooking)[0];
-      const totalTicket = allData.map((item) => item.totalTicket)[0];
-      const totalPayment = allData.map((item) => item.totalPayment)[0];
-      const paymentMethod = allData.map((item) => item.paymentMethod)[0];
-      const statusPayment = allData.map((item) => item.statusPayment)[0];
-      const statusUsed = allData.map((item) => item.statusUsed)[0];
-      const seat = allData.map((item) => item.seat);
-      const createdAt = allData.map((item) => item.createdAt)[0];
-      const updateAt = allData.map((item) => item.updateAt)[0];
-      const name = allData.map((item) => item.name)[0];
-      const category = allData.map((item) => item.category)[0];
 
-      // const bookingId = allData.booking[0];
+      const seat = allData.map((item) => item.seat);
+
       const result = {
         id,
-        scheduleId,
-        dateBooking,
-        timeBooking,
-        totalTicket,
-        totalPayment,
-        paymentMethod,
-        statusPayment,
-        statusUsed,
+        ...allData[0],
         seat,
-        createdAt,
-        updateAt,
-        name,
-        category,
       };
 
       if (seat.length <= 0) {
@@ -96,6 +77,36 @@ module.exports = {
         response,
         200,
         `Success get data by id ${id}`,
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  getBookingByUserId: async (request, response) => {
+    try {
+      const { userId } = request.params;
+      const allData = await bookingModel.getBookingByUserId(userId);
+      const seat = allData.map((item) => item.seat);
+      const result = {
+        userId,
+        ...allData[0],
+        seat,
+      };
+
+      if (seat.length <= 0) {
+        return helperWrapper.response(
+          response,
+          404,
+          `User id ${userId} is missing or never booking`,
+          null
+        );
+      }
+
+      return helperWrapper.response(
+        response,
+        200,
+        `Success get data booking by user id ${userId}`,
         result
       );
     } catch (error) {
@@ -119,7 +130,7 @@ module.exports = {
         return helperWrapper.response(
           response,
           404,
-          `Search movie by '${scheduleId}' is not found`,
+          `Search booking by '${scheduleId}' is not found`,
           null
         );
       }
@@ -130,6 +141,7 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

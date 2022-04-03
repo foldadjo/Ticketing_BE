@@ -3,25 +3,13 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable prefer-const */
+const redis = require("../../config/redis");
 const helperWrapper = require("../../helpers/wrapper");
+const cloudinary = require("../../config/cloudinary");
 // --
 const movieModel = require("./movieModel");
 // --
 module.exports = {
-  getHello: async (request, response) => {
-    try {
-      //   response.status(200);
-      //   response.send("Hello World");
-      return helperWrapper.response(
-        response,
-        200,
-        "Success get data !",
-        "Hello World"
-      );
-    } catch (error) {
-      return helperWrapper.response(response, 400, "Bad Request", null);
-    }
-  },
   getAllMovie: async (request, response) => {
     try {
       let { page, limit, searchName, sort } = request.query;
@@ -76,11 +64,6 @@ module.exports = {
   },
   getMovieById: async (request, response) => {
     try {
-      // request = {
-      //   params: {
-      //     id: 1
-      //   }
-      // }
       const { id } = request.params;
       const result = await movieModel.getMovieById(id);
 
@@ -93,6 +76,8 @@ module.exports = {
         );
       }
 
+      redis.setEx(`getMovie: ${id}`, 3600, JSON.stringify(result));
+
       return helperWrapper.response(
         response,
         200,
@@ -103,10 +88,23 @@ module.exports = {
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
+  getMovieRedis: async (request, response, next) => {
+    try {
+      const data = await redis.get(`getMovie:${JSON.stringify(request.query)}`);
+      if (data !== null) {
+        ("");
+      }
+    } catch (error) {
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
   createMovie: async (request, response) => {
     try {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
+      let image;
+      request.file ? (image = `${request.file.filename}`) : (image = "");
+
       const setData = {
         name,
         category,
@@ -114,6 +112,7 @@ module.exports = {
         cast,
         director,
         duration,
+        image,
       };
       const result = await movieModel.createMovie(setData);
       return helperWrapper.response(
@@ -131,6 +130,22 @@ module.exports = {
       const { id } = request.params;
       const { name, category, synopsis, cast, director, duration } =
         request.body;
+      let image;
+
+      if (request.file) {
+        const imageDelete = await movieModel.getMovieById(id);
+        if (imageDelete[0].image.length > 0) {
+          await cloudinary.uploader.destroy(
+            `${imageDelete[0].image}`,
+            (delresult) => {
+              console.log(delresult);
+            }
+          );
+        }
+        image = `${request.file.filename}`;
+      } else {
+        ("");
+      }
       const setData = {
         name,
         category,
@@ -138,6 +153,7 @@ module.exports = {
         cast,
         director,
         duration,
+        image,
         updateAt: new Date(Date.now()),
       };
 
@@ -157,13 +173,33 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
   deleteMovie: async (request, response) => {
     try {
       const { id } = request.params;
+      const imageDelete = await movieModel.getMovieById(id);
+      if (imageDelete[0].image.length > 0) {
+        await cloudinary.uploader.destroy(
+          `${imageDelete[0].image}`,
+          (delresult) => {
+            console.log(delresult);
+          }
+        );
+      }
       const result = await movieModel.deleteMovie(id);
+
+      if (result.length <= 0) {
+        return helperWrapper.response(
+          response,
+          404,
+          `Data by id ${id} not found`,
+          null
+        );
+      }
+
       return helperWrapper.response(
         response,
         200,

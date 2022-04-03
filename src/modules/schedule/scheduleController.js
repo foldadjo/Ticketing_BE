@@ -157,6 +157,14 @@ module.exports = {
     try {
       const { id } = request.params;
       const result = await scheduleModel.deleteSchedule(id);
+      if (result.length <= 0) {
+        return helperWrapper.response(
+          response,
+          404,
+          `Data by id ${id} not found`,
+          null
+        );
+      }
       return helperWrapper.response(
         response,
         200,

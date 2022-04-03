@@ -21,7 +21,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       connection.query(
         `SELECT * FROM movie INNER JOIN schedule ON schedule.movieId = movie.id WHERE schedule.movieId LIKE '%${searchMovieId}%' 
-        AND schedule.location LIKE '%${searhLocation}%' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset};`,
+        AND schedule.location LIKE '%${searhLocation}%' ORDER BY ${sort} LIMIT ${limit} OFFSET ${offset};`, // movie ID jgn kasih like
         (error, result) => {
           if (!error) {
             resolve(result);
