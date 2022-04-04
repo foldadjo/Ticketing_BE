@@ -10,9 +10,8 @@ module.exports = {
     try {
       const { id } = request.params;
       const data = await userModel.getUserById(id);
-      const result = `${data[0].firstName} ${data[0].lastName}`;
 
-      if (result.length <= 0) {
+      if (data.length <= 0) {
         return helperWrapper.response(
           response,
           404,
@@ -20,6 +19,8 @@ module.exports = {
           null
         );
       }
+
+      const result = `${data[0].firstName} ${data[0].lastName}`;
 
       await redis.setEx(`getUserById: ${id}`, 3600, JSON.stringify(result));
 
@@ -68,9 +69,22 @@ module.exports = {
       const user = request.decodeToken;
       const { id } = user;
       let image;
-      console.log(request.file);
 
       if (request.file) {
+        if (request.file.size > 1000000) {
+          await cloudinary.uploader.destroy(
+            `${request.file.filename}`,
+            (delresult) => {
+              console.log(delresult);
+            }
+          );
+          return helperWrapper.response(
+            response,
+            400,
+            "size cannot be more than 1mb",
+            null
+          );
+        }
         const imageDelete = await userModel.getUserById(id);
         if (imageDelete[0].image.length > 0) {
           await cloudinary.uploader.destroy(

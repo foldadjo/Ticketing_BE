@@ -167,8 +167,9 @@ module.exports = {
   deleteSchedule: async (request, response) => {
     try {
       const { id } = request.params;
-      const result = await scheduleModel.deleteSchedule(id);
-      if (result.length <= 0) {
+      const data = await scheduleModel.getScheduleById(id);
+
+      if (data.length <= 0) {
         return helperWrapper.response(
           response,
           404,
@@ -176,6 +177,7 @@ module.exports = {
           null
         );
       }
+      const result = await scheduleModel.deleteSchedule(id);
       return helperWrapper.response(
         response,
         200,

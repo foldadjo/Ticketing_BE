@@ -106,8 +106,27 @@ module.exports = {
     try {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
+      console.log(request.file);
       let image;
-      request.file ? (image = `${request.file.filename}`) : (image = "");
+      if (request.file) {
+        if (request.file.size > 1000000) {
+          await cloudinary.uploader.destroy(
+            `${request.file.filename}`,
+            (delresult) => {
+              console.log(delresult);
+            }
+          );
+          return helperWrapper.response(
+            response,
+            400,
+            "size cannot be more than 1mb",
+            null
+          );
+        }
+        image = `${request.file.filename}`;
+      } else {
+        image = "";
+      }
 
       const setData = {
         name,
@@ -138,6 +157,20 @@ module.exports = {
       console.log(request.file);
 
       if (request.file) {
+        if (request.file.size > 1000000) {
+          await cloudinary.uploader.destroy(
+            `${request.file.filename}`,
+            (delresult) => {
+              console.log(delresult);
+            }
+          );
+          return helperWrapper.response(
+            response,
+            400,
+            "size cannot be more than 1mb",
+            null
+          );
+        }
         const imageDelete = await movieModel.getMovieById(id);
         if (imageDelete[0].image.length > 0) {
           await cloudinary.uploader.destroy(
@@ -184,18 +217,9 @@ module.exports = {
   deleteMovie: async (request, response) => {
     try {
       const { id } = request.params;
-      const imageDelete = await movieModel.getMovieById(id);
-      if (imageDelete[0].image.length > 0) {
-        await cloudinary.uploader.destroy(
-          `${imageDelete[0].image}`,
-          (delresult) => {
-            console.log(delresult);
-          }
-        );
-      }
-      const result = await movieModel.deleteMovie(id);
+      const data = await movieModel.getMovieById(id);
 
-      if (result.length <= 0) {
+      if (data.length <= 0) {
         return helperWrapper.response(
           response,
           404,
@@ -203,6 +227,13 @@ module.exports = {
           null
         );
       }
+      if (data[0].image.length > 0) {
+        await cloudinary.uploader.destroy(`${data[0].image}`, (delresult) => {
+          console.log(delresult);
+        });
+      }
+
+      const result = await movieModel.deleteMovie(id);
 
       return helperWrapper.response(
         response,
@@ -211,6 +242,7 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

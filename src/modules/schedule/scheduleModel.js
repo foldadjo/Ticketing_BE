@@ -34,7 +34,7 @@ module.exports = {
   getScheduleById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM schedule INNER JOIN movie ON schedule.movieId = movie.id WHERE schedule.id = ?",
+        "SELECT * FROM movie INNER JOIN schedule ON schedule.movieId = movie.id WHERE schedule.id = ?",
         id,
         (error, result) => {
           if (!error) {
