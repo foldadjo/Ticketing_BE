@@ -5,6 +5,7 @@ const Router = express.Router();
 const authController = require("./authController");
 
 Router.post("/register", authController.register);
+Router.patch("/verif", authController.verification);
 Router.post("/login", authController.login);
 
 // Router.get("/hello", movieController.getHello);

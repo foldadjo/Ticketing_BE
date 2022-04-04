@@ -9,7 +9,7 @@ const bodyParser = require("body-parser");
 const routerNavigtion = require("./routes");
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT;
 
 // middelware
 app.use(morgan("dev"));

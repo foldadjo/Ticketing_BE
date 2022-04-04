@@ -1,8 +1,4 @@
-/* eslint-disable no-self-assign */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable eqeqeq */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable prefer-const */
+const bcrypt = require("bcrypt");
 const redis = require("../../config/redis");
 const helperWrapper = require("../../helpers/wrapper");
 const cloudinary = require("../../config/cloudinary");
@@ -39,9 +35,9 @@ module.exports = {
   },
   updateProfile: async (request, response) => {
     try {
-      const { fisrtName, lastName, noTelp } = request.body;
+      const { firstName, lastName, noTelp } = request.body;
       const setData = {
-        fisrtName,
+        firstName,
         lastName,
         noTelp,
         updateAt: new Date(Date.now()),
@@ -72,6 +68,7 @@ module.exports = {
       const user = request.decodeToken;
       const { id } = user;
       let image;
+      console.log(request.file);
 
       if (request.file) {
         const imageDelete = await userModel.getUserById(id);
@@ -85,7 +82,7 @@ module.exports = {
         }
         image = `${request.file.filename}`;
       } else {
-        ("");
+        return helperWrapper.response(response, 400, "Image not found", null);
       }
 
       const setData = {
@@ -107,10 +104,12 @@ module.exports = {
   updatePassword: async (request, response) => {
     try {
       const { newPassword, confirmPassword } = request.body;
-      if (newPassword == confirmPassword) {
+      if (newPassword === confirmPassword) {
         const password = newPassword;
+        const salt = bcrypt.genSaltSync(10);
+        const encryptedPassword = bcrypt.hashSync(password, salt);
         const setData = {
-          password,
+          password: encryptedPassword,
           updateAt: new Date(Date.now()),
         };
         const user = request.decodeToken;
@@ -136,7 +135,6 @@ module.exports = {
         null
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

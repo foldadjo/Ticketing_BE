@@ -4,7 +4,7 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable no-restricted-globals */
 const helperWrapper = require("../../helpers/wrapper");
-
+const redis = require("../../config/redis");
 // --
 const scheduleModel = require("./scheduleModel");
 // --
@@ -49,6 +49,12 @@ module.exports = {
         offset
       );
 
+      redis.setEx(
+        `getMovie:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
+      );
+
       if (result.length <= 0) {
         return helperWrapper.response(
           response,
@@ -82,6 +88,11 @@ module.exports = {
           null
         );
       }
+      redis.setEx(
+        `getMovie:${JSON.stringify(id)}`,
+        3600,
+        JSON.stringify({ result })
+      );
 
       return helperWrapper.response(
         response,

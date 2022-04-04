@@ -12,7 +12,7 @@ const movieModel = require("./movieModel");
 module.exports = {
   getAllMovie: async (request, response) => {
     try {
-      let { page, limit, searchName, sort } = request.query;
+      let { page, limit, searchName, searchRelease, sort } = request.query;
       // default value
       page = isNaN(page) || page == 0 ? (page = 1) : (page = Number(page));
       limit =
@@ -21,11 +21,17 @@ module.exports = {
       typeof searchName === "string"
         ? (searchName = searchName)
         : (searchName = "");
+      typeof searchRelease === "string"
+        ? (searchRelease = `= ${searchRelease}`)
+        : (searchRelease = `LIKE "%%"`);
       typeof sort != "string" || sort === ""
         ? (sort = "id ASC")
         : (sort = sort); // harus sesuai dengan objek, kalo tidak ada bakal error
 
-      const totalData = await movieModel.getCountMovie(searchName);
+      const totalData = await movieModel.getCountMovie(
+        searchRelease,
+        searchName
+      );
       const offset = page * limit - limit;
       const totalPage = Math.ceil(totalData / limit);
 
@@ -37,6 +43,7 @@ module.exports = {
       };
 
       const result = await movieModel.getAllMovie(
+        searchRelease,
         searchName,
         sort,
         limit,
@@ -47,10 +54,16 @@ module.exports = {
         return helperWrapper.response(
           response,
           404,
-          `Search movie by '${searchName}' is not found`,
+          `Search movie by '${searchName}' and release date in month '${searchRelease}' is not found`,
           null
         );
       }
+      redis.setEx(
+        `getMovie:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
+      );
+
       return helperWrapper.response(
         response,
         200,
@@ -59,6 +72,7 @@ module.exports = {
         pageInfo
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -84,16 +98,6 @@ module.exports = {
         "Success get data !",
         result
       );
-    } catch (error) {
-      return helperWrapper.response(response, 400, "Bad Request", null);
-    }
-  },
-  getMovieRedis: async (request, response, next) => {
-    try {
-      const data = await redis.get(`getMovie:${JSON.stringify(request.query)}`);
-      if (data !== null) {
-        ("");
-      }
     } catch (error) {
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
@@ -131,6 +135,7 @@ module.exports = {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
       let image;
+      console.log(request.file);
 
       if (request.file) {
         const imageDelete = await movieModel.getMovieById(id);
@@ -173,7 +178,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

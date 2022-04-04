@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const helperWrapper = require("../../helpers/wrapper");
 const authModel = require("./authModel");
 
@@ -8,71 +8,97 @@ module.exports = {
     try {
       const { firstName, lastName, noTelp, email, password } = request.body;
 
-      if (!(email && password)) {
-        return response
-          .status(400)
-          .send({ error: "Data not formatted properly" });
-      }
-
-      const setData = {
-        firstName,
-        lastName,
-        noTelp,
-        email,
-        password,
-      };
-      const userCek = await authModel.getUserByEmail(email);
-      if (userCek.length < 1) {
-        const result = await authModel.register(setData);
-        // generate salt to hash password
-        const salt = await bcrypt.genSalt(10);
-        // now we set user password to hashed password
-        result.password = await bcrypt.hash(result.password, salt);
-        // console.log(result.password);
-        delete result.password;
+      const UserCek = await authModel.getUserByEmail(email);
+      const salt = bcrypt.genSaltSync(10);
+      const encryptedPassword = bcrypt.hashSync(password, salt);
+      let code = Number(Math.random() * 899999 + 100000);
+      // eslint-disable-next-line radix
+      code = parseInt(code);
+      let setData;
+      if (UserCek.length === 0) {
+        setData = {
+          firstName,
+          lastName,
+          noTelp,
+          email,
+          code,
+          password: encryptedPassword,
+        };
+      } else {
         return helperWrapper.response(
           response,
-          200,
-          "Success register user",
-          result
-        );
-      }
-      return helperWrapper.response(response, 200, "e-mail registered", null);
-    } catch (error) {
-      return helperWrapper.response(response, 400, "Bad Request", null);
-    }
-  },
-  // eslint-disable-next-line consistent-return
-  login: async (request, response) => {
-    try {
-      const { email, password } = request.body;
-
-      const userCek = await authModel.getUserByEmail(email);
-
-      if (userCek.length < 1) {
-        return helperWrapper.response(
-          response,
-          200,
-          "Email not register",
+          409,
+          "Email has been registered !",
           null
         );
       }
 
-      bcrypt.compare(password, userCek.password, () => {
-        if (password !== userCek[0].password) {
-          return helperWrapper.response(response, 200, "Wrong Password", null);
+      const result = await authModel.register(setData);
+      delete result.password;
+
+      return helperWrapper.response(response, 200, "Succes Register", result);
+    } catch (error) {
+      console.log(error);
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  verification: async (request, response) => {
+    try {
+      // eslint-disable-next-line prefer-const
+      let { id, OTP } = request.body;
+      OTP = Number(OTP);
+
+      const code = await authModel.getUserById(id);
+      let status;
+      if (OTP === code[0].code) {
+        status = "Active";
+      } else {
+        return helperWrapper.response(response, 400, "OTP is wrong ", null);
+      }
+      const setData = {
+        status,
+      };
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data in setData) {
+        if (!setData[data]) {
+          delete setData[data];
         }
+      }
+      const result = await authModel.verification(id, setData);
+      return helperWrapper.response(
+        response,
+        200,
+        "verification is success",
+        result
+      );
+    } catch (error) {
+      console.log(error);
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  login: async (request, response) => {
+    try {
+      const { email, password } = request.body;
 
-        const payload = userCek[0];
-        delete payload.password;
+      const UserCek = await authModel.getUserByEmail(email);
 
-        // Send JWT
-        const token = jwt.sign({ ...payload }, "RAHASIA", { expiresIn: "24h" });
-        return helperWrapper.response(response, 200, "Success Login", {
-          id: payload.id,
-          token,
-        });
-      });
+      if (UserCek.length > 0) {
+        const PassCek = bcrypt.compareSync(password, UserCek[0].password);
+        if (PassCek) {
+          const payload = UserCek[0];
+          delete payload.password;
+          const token = jwt.sign({ ...payload }, "RAHASIA", {
+            expiresIn: "24h",
+          });
+          return helperWrapper.response(response, 200, "Success Login", {
+            id: payload.id,
+            token,
+          });
+        }
+        return helperWrapper.response(response, 401, "Password Incorrect");
+      }
+      return helperWrapper.response(response, 400, "Email not register", null);
     } catch (error) {
       return helperWrapper.response(response, 400, "Bad Request", null);
     }

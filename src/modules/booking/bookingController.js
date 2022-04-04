@@ -1,5 +1,6 @@
 /* eslint-disable no-shadow */
 const helperWrapper = require("../../helpers/wrapper");
+const redis = require("../../config/redis");
 // --
 const bookingModel = require("./bookingModel");
 // --
@@ -53,16 +54,19 @@ module.exports = {
   getBookingById: async (request, response) => {
     try {
       const { id } = request.params;
-
       const allData = await bookingModel.getBookingById(id);
-
       const seat = allData.map((item) => item.seat);
-
       const result = {
         id,
         ...allData[0],
         seat,
       };
+
+      redis.setEx(
+        `getMovie:${JSON.stringify(id)}`,
+        3600,
+        JSON.stringify({ result })
+      );
 
       if (seat.length <= 0) {
         return helperWrapper.response(
@@ -102,6 +106,11 @@ module.exports = {
           null
         );
       }
+      redis.setEx(
+        `getMovie:${JSON.stringify(userId)}`,
+        3600,
+        JSON.stringify({ result })
+      );
 
       return helperWrapper.response(
         response,
@@ -124,7 +133,12 @@ module.exports = {
       );
 
       const result = seatBooking.map((item) => item.seat);
-      // console.log(result);
+
+      redis.setEx(
+        `getMovie:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify({ result })
+      );
 
       if (result.length <= 0) {
         return helperWrapper.response(
@@ -141,7 +155,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
