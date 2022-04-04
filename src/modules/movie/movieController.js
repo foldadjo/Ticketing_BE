@@ -1,8 +1,3 @@
-/* eslint-disable no-self-assign */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable eqeqeq */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable prefer-const */
 const redis = require("../../config/redis");
 const helperWrapper = require("../../helpers/wrapper");
 const cloudinary = require("../../config/cloudinary");
@@ -24,7 +19,7 @@ module.exports = {
       typeof searchRelease === "string"
         ? (searchRelease = `= ${searchRelease}`)
         : (searchRelease = `LIKE "%%"`);
-      typeof sort != "string" || sort === ""
+      typeof sort !== "string" || sort === ""
         ? (sort = "id ASC")
         : (sort = sort); // harus sesuai dengan objek, kalo tidak ada bakal error
 
@@ -72,7 +67,6 @@ module.exports = {
         pageInfo
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -106,7 +100,6 @@ module.exports = {
     try {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
-      console.log(request.file);
       let image;
       if (request.file) {
         if (request.file.size > 1000000) {
@@ -154,7 +147,6 @@ module.exports = {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
       let image;
-      console.log(request.file);
 
       if (request.file) {
         if (request.file.size > 1000000) {
@@ -181,8 +173,6 @@ module.exports = {
           );
         }
         image = `${request.file.filename}`;
-      } else {
-        ("");
       }
       const setData = {
         name,
@@ -242,7 +232,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

@@ -1,8 +1,3 @@
-/* eslint-disable no-self-assign */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable prefer-const */
-/* eslint-disable eqeqeq */
-/* eslint-disable no-restricted-globals */
 const helperWrapper = require("../../helpers/wrapper");
 const redis = require("../../config/redis");
 // --
@@ -23,7 +18,7 @@ module.exports = {
       typeof searchLocation === "string"
         ? (searchLocation = searchLocation)
         : (searchLocation = "");
-      typeof sort != "string" || sort === ""
+      typeof sort !== "string" || sort === ""
         ? (sort = "schedule.id")
         : (sort = sort); // harus sesuai dengan objek, kalo tidak ada bakal error
 
@@ -106,7 +101,7 @@ module.exports = {
   },
   createSchedule: async (request, response) => {
     try {
-      let { movieId, premiere, price, location, dateStart, dateEnd, time } =
+      const { movieId, premiere, price, location, dateStart, dateEnd, time } =
         request.body;
 
       const setData = {

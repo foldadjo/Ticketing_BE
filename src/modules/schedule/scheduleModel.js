@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-// const { promise } = require("../../config/mysql");
 const connection = require("../../config/mysql");
 
 module.exports = {
@@ -62,6 +60,7 @@ module.exports = {
           }
         }
       );
+      // eslint-disable-next-line no-console
       console.log(query.sql);
     }),
   updateSchedule: (id, data) =>

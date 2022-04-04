@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-// const { promise } = require("../../config/mysql");
 const connection = require("../../config/mysql");
 
 module.exports = {
