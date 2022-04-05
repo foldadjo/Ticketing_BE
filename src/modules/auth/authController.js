@@ -45,7 +45,7 @@ module.exports = {
         from: "tiketjauhar@gmail.com",
         to: email,
         subject: "verivication code",
-        text: `use this code for verification, OTP Code is = ${code}`,
+        text: `use this code for verification, OTP Code is = ${code}, don't give the code to anyone `,
       };
 
       transporter.sendMail(mailOptions, (err, info) => {
