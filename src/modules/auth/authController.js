@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 const helperWrapper = require("../../helpers/wrapper");
 const authModel = require("./authModel");
 
@@ -32,13 +33,32 @@ module.exports = {
           null
         );
       }
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "tiketjauhar@gmail.com",
+          pass: "Tiketjauhar123",
+        },
+      });
+
+      const mailOptions = {
+        from: "tiketjauhar@gmail.com",
+        to: email,
+        subject: "verivication code",
+        text: `use this code for verification, OTP Code is = ${code}`,
+      };
+
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) throw err;
+        console.log(`Email sent: ${info.response}`);
+      });
 
       const result = await authModel.register(setData);
       delete result.password;
+      delete result.code;
 
       return helperWrapper.response(response, 200, "Succes Register", result);
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -73,7 +93,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
