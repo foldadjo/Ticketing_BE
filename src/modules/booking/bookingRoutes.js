@@ -5,16 +5,32 @@ const Router = express.Router();
 const bookingController = require("./bookingController");
 const middlewareAuth = require("../../middleware/auth");
 
-Router.get("/seat/", bookingController.getSeatBooking);
-Router.get("/id/:id", bookingController.getBookingById);
+Router.get(
+  "/seat/",
+  middlewareAuth.authentication,
+  bookingController.getSeatBooking
+);
+Router.get(
+  "/id/:id",
+  middlewareAuth.authentication,
+  bookingController.getBookingById
+);
 Router.get("/user/:userId", bookingController.getBookingByUserId);
-Router.get("/dashboard/", bookingController.getDashboard);
+Router.get(
+  "/dashboard/",
+  middlewareAuth.isAdmin,
+  bookingController.getDashboard
+);
 Router.post(
   "/",
   middlewareAuth.authentication,
   bookingController.createBooking
 );
-Router.patch("/:id", bookingController.updateStatusBooking);
+Router.patch(
+  "/:id",
+  middlewareAuth.isAdmin,
+  bookingController.updateStatusBooking
+);
 // Router.delete("/:id", bookingController.deleteBooking);
 
 // Router.get("/hello", movieController.getHello);
