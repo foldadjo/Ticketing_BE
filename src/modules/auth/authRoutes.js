@@ -7,11 +7,7 @@ const authController = require("./authController");
 Router.post("/register", authController.register);
 Router.patch("/verif", authController.verification);
 Router.post("/login", authController.login);
-
-// Router.get("/hello", movieController.getHello);
-// Router.get("/hello", (request, response) => {
-//   response.status(200);
-//   response.send("Hello World");
-// });
+Router.post("/refresh", authController.refresh);
+Router.post("/logout", authController.logout);
 
 module.exports = Router;

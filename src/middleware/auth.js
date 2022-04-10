@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 const helperWrapper = require("../helpers/wrapper");
+const redis = require("../config/redis");
 
 module.exports = {
-  authentication: (request, response, next) => {
+  authentication: async (request, response, next) => {
     let token = request.headers.authorization;
 
     if (!token) {
@@ -10,6 +11,16 @@ module.exports = {
     }
 
     token = token.split(" ")[1];
+
+    const checkRedis = await redis.get(`accessToken:${token}`);
+    if (checkRedis) {
+      return helperWrapper.response(
+        response,
+        403,
+        "Your token is destroyed please login again",
+        null
+      );
+    }
 
     jwt.verify(token, "RAHASIA", (error, result) => {
       if (error) {
