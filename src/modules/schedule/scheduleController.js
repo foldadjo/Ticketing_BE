@@ -45,7 +45,7 @@ module.exports = {
       );
 
       redis.setEx(
-        `getMovie:${JSON.stringify(request.query)}`,
+        `getSchedule:${JSON.stringify(request.query)}`,
         3600,
         JSON.stringify({ result, pageInfo })
       );
@@ -84,7 +84,7 @@ module.exports = {
         );
       }
       redis.setEx(
-        `getMovie:${JSON.stringify(id)}`,
+        `getSchedule:${JSON.stringify(id)}`,
         3600,
         JSON.stringify({ result })
       );

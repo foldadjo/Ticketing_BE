@@ -43,10 +43,8 @@ module.exports = {
         noTelp,
         updateAt: new Date(Date.now()),
       };
-
       const user = request.decodeToken;
       const { id } = user;
-
       // eslint-disable-next-line no-restricted-syntax
       for (const data in setData) {
         if (!setData[data]) {

@@ -15,6 +15,7 @@ Router.get(
 );
 Router.post(
   "/",
+  middlewareRedis.clearMovieRedis,
   middlewareAuth.isAdmin,
   middlewareUpload,
   movieController.createMovie
@@ -26,12 +27,11 @@ Router.patch(
   middlewareRedis.clearMovieRedis,
   movieController.updateMovie
 );
-Router.delete("/:id", middlewareAuth.isAdmin, movieController.deleteMovie);
-
-// Router.get("/hello", movieController.getHello);
-// Router.get("/hello", (request, response) => {
-//   response.status(200);
-//   response.send("Hello World");
-// });
+Router.delete(
+  "/:id",
+  middlewareRedis.clearMovieRedis,
+  middlewareAuth.isAdmin,
+  movieController.deleteMovie
+);
 
 module.exports = Router;

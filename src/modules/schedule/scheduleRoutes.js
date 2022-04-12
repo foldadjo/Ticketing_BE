@@ -16,7 +16,12 @@ Router.get(
   middlewareRedis.getScheduleByIdRedis,
   scheduleController.getScheduleById
 );
-Router.post("/", middlewareAuth.isAdmin, scheduleController.createSchedule);
+Router.post(
+  "/",
+  middlewareRedis.clearScheduleRedis,
+  middlewareAuth.isAdmin,
+  scheduleController.createSchedule
+);
 Router.patch(
   "/:id",
   middlewareRedis.clearScheduleRedis,
@@ -25,6 +30,7 @@ Router.patch(
 );
 Router.delete(
   "/:id",
+  middlewareRedis.clearScheduleRedis,
   middlewareAuth.isAdmin,
   scheduleController.deleteSchedule
 );

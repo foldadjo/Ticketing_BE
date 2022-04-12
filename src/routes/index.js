@@ -13,9 +13,5 @@ Router.use("/schedule", scheduleRoutes);
 Router.use("/booking", bookingRoutes);
 Router.use("/auth", authRoutes);
 Router.use("/user", userRoutes);
-// Router.get("/hello", (request, response) => {
-//   response.status(200);
-//   response.send("Hello World");
-// });
 
 module.exports = Router;

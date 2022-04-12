@@ -7,7 +7,7 @@ const helperWrapper = require("../helpers/wrapper");
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "tiketjauhar/movie",
+    folder: "tiketjauhar/user",
   },
 });
 

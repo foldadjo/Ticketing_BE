@@ -4,30 +4,22 @@ const Router = express.Router();
 
 const userController = require("./userController");
 const middlewareAuth = require("../../middleware/auth");
-const middlewareRedis = require("../../middleware/redis");
-const middlewareUpload = require("../../middleware/uploadMovie");
+const middlewareUpload = require("../../middleware/uploadUser");
 
-Router.get(
-  "/:id",
-  middlewareAuth.authentication,
-  middlewareRedis.getMovieByIdRedis,
-  userController.getUserById
-);
+Router.get("/:id", middlewareAuth.authentication, userController.getUserById);
 Router.patch(
-  "/profile/",
+  "/profile",
   middlewareAuth.authentication,
-  middlewareRedis.clearMovieRedis,
   userController.updateProfile
 );
 Router.patch(
-  "/image/",
+  "/image",
   middlewareUpload,
   middlewareAuth.authentication,
-  middlewareRedis.clearMovieRedis,
   userController.updateImage
 );
 Router.patch(
-  "/password/",
+  "/password",
   middlewareAuth.authentication,
   userController.updatePassword
 );

@@ -16,9 +16,6 @@ module.exports = {
       typeof searchName === "string"
         ? (searchName = searchName)
         : (searchName = "");
-      typeof searchRelease === "string"
-        ? (searchRelease = `= ${searchRelease}`)
-        : (searchRelease = `LIKE "%%"`);
       typeof sort !== "string" || sort === ""
         ? (sort = "id ASC")
         : (sort = sort); // harus sesuai dengan objek, kalo tidak ada bakal error

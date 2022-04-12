@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const connection = require("../../config/mysql");
 
 module.exports = {
@@ -19,6 +18,7 @@ module.exports = {
           }
         }
       );
+      // eslint-disable-next-line no-console
       console.log(query.sql);
     }),
   createBookingseat: (seat) =>
@@ -38,6 +38,7 @@ module.exports = {
           }
         }
       );
+      // eslint-disable-next-line no-console
       console.log(query.sql);
     }),
   getBookingById: (id) =>
