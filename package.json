@@ -18,7 +18,6 @@
         "express": "^4.17.3",
         "googleapis": "^100.0.0",
         "helmet": "^5.0.2",
-        "heroku": "^7.60.1",
         "jsonwebtoken": "^8.5.1",
         "midtrans-client": "^1.3.1",
         "morgan": "^1.10.0",

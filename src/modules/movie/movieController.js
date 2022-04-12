@@ -144,8 +144,23 @@ module.exports = {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
       let image;
+      const type = request.file.mimetype.split("/")[1];
 
       if (request.file) {
+        if (type !== "jpeg" && type !== "jpg" && type !== "png") {
+          await cloudinary.uploader.destroy(
+            `${request.file.filename}`,
+            (delresult) => {
+              console.log(delresult);
+            }
+          );
+          return helperWrapper.response(
+            response,
+            400,
+            "file type mush jpeg or png",
+            null
+          );
+        }
         if (request.file.size > 1000000) {
           await cloudinary.uploader.destroy(
             `${request.file.filename}`,
