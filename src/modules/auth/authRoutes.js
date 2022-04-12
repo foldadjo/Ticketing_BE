@@ -8,5 +8,6 @@ Router.post("/register", authController.register);
 Router.post("/login", authController.login);
 Router.post("/refresh", authController.refresh);
 Router.post("/logout", authController.logout);
+Router.patch("/verification", authController.verification);
 
 module.exports = Router;

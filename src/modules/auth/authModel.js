@@ -29,4 +29,22 @@ module.exports = {
         }
       );
     }),
+  verification: (data, email) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE user SET ? WHERE email = ?",
+        [data, email],
+        (error) => {
+          if (!error) {
+            const newResult = {
+              email,
+              ...data,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
 };

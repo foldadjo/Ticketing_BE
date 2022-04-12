@@ -15,10 +15,12 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10);
       const encryptedPassword = bcrypt.hashSync(password, salt);
 
+      let id;
       let setData;
       if (UserCek.length === 0) {
+        id = uuidv4();
         setData = {
-          id: uuidv4,
+          id,
           firstName,
           lastName,
           noTelp,
@@ -35,12 +37,14 @@ module.exports = {
       }
 
       const result = await authModel.register(setData);
+
       const setSendEmail = {
         to: email,
-        subject: "Email Verification !",
+        subject: "Confirm your account on tiketjauhar",
         name: firstName,
+        code: result.password,
         template: "verificationEmail.html",
-        buttonUrl: "google.com",
+        buttonUrl: `https://tiketjauhar.herokuapp.com/verification`,
       };
       await sendMail(setSendEmail);
 
@@ -50,6 +54,45 @@ module.exports = {
         response,
         200,
         "Succes Register User",
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  verification: async (request, response) => {
+    try {
+      const { code, email } = request.body;
+      const searchdata = await authModel.getUserByEmail(email);
+      let Data;
+      if (searchdata < 1) {
+        return helperWrapper.response(
+          response,
+          200,
+          "email not registered",
+          null
+        );
+      }
+      let result;
+      if (code === searchdata[0].password) {
+        Data = {
+          status: "Active",
+          updateAt: new Date(Date.now()),
+        };
+        result = await authModel.verification(Data, email);
+      } else {
+        return helperWrapper.response(
+          response,
+          200,
+          "code verification is wrong",
+          null
+        );
+      }
+
+      return helperWrapper.response(
+        response,
+        200,
+        "Success Activation data !",
         result
       );
     } catch (error) {
@@ -88,7 +131,6 @@ module.exports = {
   },
   refresh: async (request, response) => {
     try {
-      console.log(request.body);
       const { refreshToken } = request.body;
       const checkToken = await redis.get(`refreshToken:${refreshToken}`);
       if (checkToken) {
