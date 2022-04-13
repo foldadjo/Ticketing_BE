@@ -17,10 +17,10 @@ module.exports = {
         seat,
       } = request.body;
 
-      const setDataMidtrans = {
-        id: uuidv4(),
-        total: totalPayment,
-      };
+      // const setDataMidtrans = {
+      //   id: uuidv4(),
+      //   total: totalPayment,
+      // };
 
       // const resultMidtrans = await helperMidtrans.post(setDataMidtrans);
 
@@ -59,7 +59,6 @@ module.exports = {
         // redirectUrl: resultMidtrans.redirect_url,
       });
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -133,11 +132,11 @@ module.exports = {
   // },
   getBookingById: async (request, response) => {
     try {
-      const { id } = request.params;
-      const allData = await bookingModel.getBookingById(id);
+      const user = request.decodeToken;
+      const userId = user.id;
+      const allData = await bookingModel.getBookingById(userId);
       const seat = allData.map((item) => item.seat);
       const result = {
-        id,
         ...allData[0],
         seat,
       };
@@ -146,7 +145,7 @@ module.exports = {
         return helperWrapper.response(
           response,
           404,
-          `Data by id ${id} not found`,
+          `your account never booking seat`,
           null
         );
       }
@@ -154,7 +153,7 @@ module.exports = {
       return helperWrapper.response(
         response,
         200,
-        `Success get data by id ${id}`,
+        `Success get data!!`,
         result
       );
     } catch (error) {

@@ -6,18 +6,18 @@ const bookingController = require("./bookingController");
 const middlewareAuth = require("../../middleware/auth");
 
 Router.get(
-  "/seat/",
+  "/seat",
   middlewareAuth.authentication,
   bookingController.getSeatBooking
 );
 Router.get(
-  "/id/:id",
+  "/id",
   middlewareAuth.authentication,
   bookingController.getBookingById
 );
 Router.get("/user/:userId", bookingController.getBookingByUserId);
 Router.get(
-  "/dashboard/",
+  "/dashboard",
   middlewareAuth.isAdmin,
   bookingController.getDashboard
 );
