@@ -20,7 +20,12 @@ module.exports = {
         );
       }
 
-      const result = `${data[0].firstName} ${data[0].lastName}`;
+      const result = [
+        {
+          name: `${data[0].firstName} ${data[0].lastName}`,
+          image: `${data.image}`,
+        },
+      ];
 
       await redis.setEx(`getUserById: ${id}`, 3600, JSON.stringify(result));
 
