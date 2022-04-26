@@ -23,7 +23,7 @@ module.exports = {
       const result = [
         {
           name: `${data[0].firstName} ${data[0].lastName}`,
-          image: `${data.image}`,
+          image: `${data[0].image}`,
         },
       ];
 
