@@ -38,15 +38,15 @@ module.exports = {
 
       const result = await authModel.register(setData);
 
-      const setSendEmail = {
-        to: email,
-        subject: "Confirm your account on tiketjauhar",
-        name: firstName,
-        code: result.password,
-        template: "verificationEmail.html",
-        buttonUrl: `https://tiketjauhar.herokuapp.com/verification`,
-      };
-      await sendMail(setSendEmail);
+      // const setSendEmail = {
+      //   to: email,
+      //   subject: "Confirm your account on tiketjauhar",
+      //   name: firstName,
+      //   code: result.password,
+      //   template: "verificationEmail.html",
+      //   buttonUrl: `https://tiketjauhar.herokuapp.com`,
+      // };
+      // await sendMail(setSendEmail);
 
       delete result.password;
 
@@ -57,6 +57,7 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
