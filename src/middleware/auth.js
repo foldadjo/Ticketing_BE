@@ -27,16 +27,16 @@ module.exports = {
         return helperWrapper.response(response, 403, error.message, null);
       }
       request.decodeToken = result;
-      if (result.status === "Active") {
-        next();
-      } else {
-        return helperWrapper.response(
-          response,
-          403,
-          "Account not verified",
-          null
-        );
-      }
+      // if (result.status === "Active") {
+      next();
+      // } else {
+      //   return helperWrapper.response(
+      //     response,
+      //     403,
+      //     "Account not verified",
+      //     null
+      //   );
+      // }
     });
   },
   isAdmin: (request, response, next) => {
