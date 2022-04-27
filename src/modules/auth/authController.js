@@ -15,12 +15,12 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10);
       const encryptedPassword = bcrypt.hashSync(password, salt);
 
-      // let id;
+      let id;
       let setData;
       if (UserCek.length === 0) {
-        // id = uuidv4();
+        id = uuidv4();
         setData = {
-          // id,
+          id,
           firstName,
           lastName,
           noTelp,

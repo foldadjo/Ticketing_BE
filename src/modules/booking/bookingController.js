@@ -54,11 +54,15 @@ module.exports = {
       });
       const result = { bookingId, ...setData };
 
-      return helperWrapper.response(response, 200, "Success post data !", {
-        result,
+      return helperWrapper.response(
+        response,
+        200,
+        "Success post data !",
+        result
         // redirectUrl: resultMidtrans.redirect_url,
-      });
+      );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -187,6 +191,7 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
