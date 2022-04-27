@@ -18,7 +18,7 @@ Router.get(
 Router.get("/user/:userId", bookingController.getBookingByUserId);
 Router.get(
   "/dashboard",
-  middlewareAuth.isAdmin,
+  middlewareAuth.authentication,
   bookingController.getDashboard
 );
 Router.post(
