@@ -24,6 +24,7 @@ module.exports = {
         {
           name: `${data[0].firstName} ${data[0].lastName}`,
           image: `${data[0].image}`,
+          role: `${data[0].role}`,
         },
       ];
 
