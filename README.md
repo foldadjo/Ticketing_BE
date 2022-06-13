@@ -25,7 +25,7 @@
 4. Create Environtments in Postman & Set :
 
 ```bash
-VARIABLE : itjobs
+VARIABLE : ticketing
 INITIAL VALUE : https://tiketjauhar.herokuapp.com
 CURRENT VALUE : https://tiketjauhar.herokuapp.com
 ```
