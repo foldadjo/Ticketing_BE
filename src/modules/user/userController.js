@@ -4,7 +4,7 @@ const helperWrapper = require("../../helpers/wrapper");
 const cloudinary = require("../../config/cloudinary");
 // --
 const userModel = require("./userModel");
-// --
+
 module.exports = {
   getUserById: async (request, response) => {
     try {
@@ -49,8 +49,7 @@ module.exports = {
         noTelp,
         updateAt: new Date(Date.now()),
       };
-      const user = request.decodeToken;
-      const { id } = user;
+      const { id } = request.params;
       // eslint-disable-next-line no-restricted-syntax
       for (const data in setData) {
         if (!setData[data]) {
@@ -65,17 +64,17 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
   updateImage: async (request, response) => {
     try {
-      const user = request.decodeToken;
-      const { id } = user;
+      const { id } = request.params;
       let image;
-      const type = request.file.mimetype.split("/")[1];
 
-      if (request.file) {
+      if (request.file !== undefined) {
+        const type = request.file.mimetype.split("/")[1];
         if (type !== "jpeg" && type !== "jpg" && type !== "png") {
           await cloudinary.uploader.destroy(
             `${request.file.filename}`,
@@ -85,7 +84,7 @@ module.exports = {
           );
           return helperWrapper.response(
             response,
-            400,
+            200,
             "file type mush jpeg or png",
             null
           );
@@ -99,13 +98,13 @@ module.exports = {
           );
           return helperWrapper.response(
             response,
-            400,
+            200,
             "size cannot be more than 1mb",
             null
           );
         }
         const imageDelete = await userModel.getUserById(id);
-        if (imageDelete[0].image.length > 0) {
+        if (imageDelete.length > 0) {
           await cloudinary.uploader.destroy(
             `${imageDelete[0].image}`,
             (delresult) => {
@@ -115,7 +114,7 @@ module.exports = {
         }
         image = `${request.file.filename}`;
       } else {
-        return helperWrapper.response(response, 400, "Image not found", null);
+        return helperWrapper.response(response, 200, "Image not found", null);
       }
 
       const setData = {
@@ -145,8 +144,7 @@ module.exports = {
           password: encryptedPassword,
           updateAt: new Date(Date.now()),
         };
-        const user = request.decodeToken;
-        const { id } = user;
+        const { id } = request.params;
         // eslint-disable-next-line no-restricted-syntax
         for (const data in setData) {
           if (!setData[data]) {
@@ -168,6 +166,38 @@ module.exports = {
         null
       );
     } catch (error) {
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  deleteImage: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const data = await userModel.getUserById(id);
+
+      if (data.length <= 0) {
+        return helperWrapper.response(
+          response,
+          200,
+          `Data by id ${id} not found`,
+          null
+        );
+      }
+      if (data[0].image.length > 0) {
+        await cloudinary.uploader.destroy(`${data[0].image}`, (delresult) => {
+          console.log(delresult);
+        });
+      }
+
+      const result = await userModel.deleteImage(id);
+
+      return helperWrapper.response(
+        response,
+        200,
+        "Success delete Image",
+        result
+      );
+    } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

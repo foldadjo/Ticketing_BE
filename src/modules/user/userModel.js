@@ -33,4 +33,21 @@ module.exports = {
         }
       );
     }),
+  deleteImage: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE user SET image=null WHERE id = ?",
+        id,
+        (error) => {
+          if (!error) {
+            const newResult = {
+              id,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
 };

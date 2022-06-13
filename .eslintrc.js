@@ -12,6 +12,7 @@ module.exports = {
   },
   plugins: ["prettier"],
   rules: {
+    "no-console": "off",
     "prettier/prettier": [
       "error",
       {
@@ -19,5 +20,6 @@ module.exports = {
       },
     ],
     "prefer-destructuring": ["error", { object: true, array: false }],
+    treatUndefinedAsUnspecified: true,
   },
 };

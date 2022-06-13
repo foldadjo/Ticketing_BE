@@ -11,13 +11,13 @@ Router.get(
   bookingController.getSeatBooking
 );
 Router.get(
-  "/id",
+  "/id/:id",
   middlewareAuth.authentication,
   bookingController.getBookingById
 );
 Router.get("/user/:userId", bookingController.getBookingByUserId);
 Router.get(
-  "/dashboard",
+  "/dash",
   middlewareAuth.authentication,
   bookingController.getDashboard
 );
@@ -31,12 +31,9 @@ Router.patch(
   middlewareAuth.isAdmin,
   bookingController.updateStatusBooking
 );
-// Router.delete("/:id", bookingController.deleteBooking);
-
-// Router.get("/hello", movieController.getHello);
-// Router.get("/hello", (request, response) => {
-//   response.status(200);
-//   response.send("Hello World");
-// });
+Router.post(
+  "/midtrans-notification",
+  bookingController.postMidtransNotification
+);
 
 module.exports = Router;

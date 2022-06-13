@@ -27,7 +27,7 @@ module.exports = {
         return helperWrapper.response(response, 403, error.message, null);
       }
       request.decodeToken = result;
-      if (result.status === "Active") {
+      if (result.status === "active") {
         next();
       } else {
         return helperWrapper.response(

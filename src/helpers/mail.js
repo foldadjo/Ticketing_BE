@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
+require("dotenv").config();
 const fs = require("fs");
 const mustache = require("mustache");
 
@@ -34,7 +35,6 @@ module.exports = {
         `src/templates/email/${data.template}`,
         "utf8"
       );
-      //   console.log(fileTemplate);
 
       const mailOptions = {
         from: '"Tiket Jauhar 👻" <tiketjauhar@gmail.com>', // sender address

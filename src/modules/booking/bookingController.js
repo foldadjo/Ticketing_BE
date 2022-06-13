@@ -17,18 +17,11 @@ module.exports = {
         seat,
       } = request.body;
 
-      // const setDataMidtrans = {
-      //   id: uuidv4(),
-      //   total: totalPayment,
-      // };
-
-      // const resultMidtrans = await helperMidtrans.post(setDataMidtrans);
-
       const user = request.decodeToken;
       const userId = user.id;
 
       const totalTicket = seat.length;
-      const statusPayment = "Success";
+      const statusPayment = "notSuccess";
       const statusUsed = "Active";
 
       const setData = {
@@ -54,91 +47,147 @@ module.exports = {
       });
       const result = { bookingId, ...setData };
 
-      return helperWrapper.response(
-        response,
-        200,
-        "Success post data !",
-        result
-        // redirectUrl: resultMidtrans.redirect_url,
-      );
+      const setDataMidtrans = {
+        id: bookingId,
+        total: totalPayment,
+      };
+
+      const resultMidtrans = await helperMidtrans.post(setDataMidtrans);
+      console.log(resultMidtrans);
+
+      return helperWrapper.response(response, 200, "Success post data !", {
+        ...result,
+        redirectUrl: resultMidtrans.redirect_url,
+      });
     } catch (error) {
       console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
-  // postMidtransNotification: async (request, response) => {
-  //   try {
-  //     console.log(request.body);
-  //     const result = await helperMidtrans.notif(request.body);
-  //     const orderId = result.order_id;
-  //     const transactionStatus = result.transaction_status;
-  //     const fraudStatus = result.fraud_status;
+  postMidtransNotification: async (request, response) => {
+    try {
+      const result = await helperMidtrans.notif(request.body);
+      console.log(request.body);
+      const orderId = result.order_id;
+      const transactionStatus = result.transaction_status;
+      const fraudStatus = result.fraud_status;
+      const paymentType = result.payment_type;
+      console.log(
+        `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
+      );
 
-  //     console.log(
-  //       `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}`
-  //     );
-
-  //     // Sample transactionStatus handling logic
-
-  //     if (transactionStatus === "capture") {
-  //       // capture only applies to card transaction, which you need to check for the fraudStatus
-  //       if (fraudStatus === "challenge") {
-  //         // TODO set transaction status on your databaase to 'challenge'
-  //         // UBAH STATUS PEMBAYARAN MENJADI PENDING
-  //         // PROSES MEMANGGIL MODEL untuk mengubah data di dalam database
-  //         // id = orderId;
-  //         const setData = {
-  //           paymentMethod: result.payment_type,
-  //           statusPayment: "PENDING",
-  //           // updatedAt: ...
-  //         };
-  //       } else if (fraudStatus === "accept") {
-  //         // TODO set transaction status on your databaase to 'success'
-  //         // UBAH STATUS PEMBAYARAN MENJADI SUCCESS
-  //         // id = orderId;
-  //         const setData = {
-  //           paymentMethod: result.payment_type,
-  //           statusPayment: "SUCCESS",
-  //           // updatedAt: ...
-  //         };
-  //       }
-  //     } else if (transactionStatus === "settlement") {
-  //       // TODO set transaction status on your databaase to 'success'
-  //       // UBAH STATUS PEMBAYARAN MENJADI SUCCESS
-  //       // id = orderId;
-  //       const setData = {
-  //         paymentMethod: result.payment_type,
-  //         statusPayment: "SUCCESS",
-  //         // updatedAt: ...
-  //       };
-  //       console.log(
-  //         `Sukses melakukan pembayaran dengan id ${orderId} dan data yang diubah ${JSON.stringify(
-  //           setData
-  //         )}`
-  //       );
-  //     } else if (transactionStatus === "deny") {
-  //       // TODO you can ignore 'deny', because most of the time it allows payment retries
-  //       // and later can become success
-  //       // UBAH STATUS PEMBAYARAN MENJADI FAILED
-  //     } else if (
-  //       transactionStatus === "cancel" ||
-  //       transactionStatus === "expire"
-  //     ) {
-  //       // TODO set transaction status on your databaase to 'failure'
-  //       // UBAH STATUS PEMBAYARAN MENJADI FAILED
-  //     } else if (transactionStatus === "pending") {
-  //       // TODO set transaction status on your databaase to 'pending' / waiting payment
-  //       // UBAH STATUS PEMBAYARAN MENJADI PENDING
-  //     }
-  //   } catch (error) {
-  //     return helperWrapper.response(response, 400, "Bad Request", null);
-  //   }
-  // },
+      if (transactionStatus === "capture") {
+        if (fraudStatus === "challenge") {
+          const setData = {
+            paymentMethod: result.payment_type,
+            statusPayment: "notSuccess",
+            updatedAt: new Date(Date.now()),
+          };
+          const resultUpdate = await bookingModel.updateStatusBooking(
+            orderId,
+            setData
+          );
+          return helperWrapper.response(
+            response,
+            200,
+            "succes get data !",
+            resultUpdate
+          );
+        }
+        if (fraudStatus === "accept") {
+          const setData = {
+            paymentMethod: paymentType,
+            statusPayment: "success",
+            updatedAt: new Date(Date.now()),
+          };
+          const resultUpdate = await bookingModel.updateStatusBooking(
+            orderId,
+            setData
+          );
+          return helperWrapper.response(
+            response,
+            200,
+            "succes get data !",
+            resultUpdate
+          );
+        }
+      } else if (transactionStatus === "settlement") {
+        const setData = {
+          paymentMethod: result.payment_type,
+          statusPayment: "success",
+          updatedAt: new Date(Date.now()),
+        };
+        const resultUpdate = await bookingModel.updateStatusBooking(
+          orderId,
+          setData
+        );
+        return helperWrapper.response(
+          response,
+          200,
+          "succes get data !",
+          resultUpdate
+        );
+      } else if (transactionStatus === "deny") {
+        const setData = {
+          paymentMethod: paymentType,
+          statusPayment: "notSuccess",
+          updatedAt: new Date(Date.now()),
+        };
+        const resultUpdate = await bookingModel.updateStatusBooking(
+          orderId,
+          setData
+        );
+        return helperWrapper.response(
+          response,
+          200,
+          "succes get data !",
+          resultUpdate
+        );
+      } else if (
+        transactionStatus === "cancel" ||
+        transactionStatus === "expire"
+      ) {
+        const setData = {
+          paymentMethod: paymentType,
+          statusPayment: "notSuccess",
+          updatedAt: new Date(Date.now()),
+        };
+        const resultUpdate = await bookingModel.updateStatusBooking(
+          orderId,
+          setData
+        );
+        return helperWrapper.response(
+          response,
+          200,
+          "succes get data !",
+          resultUpdate
+        );
+      } else if (transactionStatus === "notSuccess") {
+        const setData = {
+          paymentMethod: paymentType,
+          statusPayment: "notSuccess",
+          updatedAt: new Date(Date.now()),
+        };
+        const resultUpdate = await bookingModel.updateStatusBooking(
+          orderId,
+          setData
+        );
+        return helperWrapper.response(
+          response,
+          200,
+          "succes get data !",
+          resultUpdate
+        );
+      }
+    } catch (error) {
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
   getBookingById: async (request, response) => {
     try {
-      const user = request.decodeToken;
-      const userId = user.id;
-      const allData = await bookingModel.getBookingById(userId);
+      const { id } = request.params;
+      console.log(id);
+      const allData = await bookingModel.getBookingById(id);
       const seat = allData.map((item) => item.seat);
       const result = {
         ...allData[0],
@@ -161,24 +210,19 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
   getBookingByUserId: async (request, response) => {
     try {
       const { userId } = request.params;
-      const allData = await bookingModel.getBookingByUserId(userId);
-      const seat = allData.map((item) => item.seat);
-      const result = {
-        userId,
-        ...allData[0],
-        seat,
-      };
+      const result = await bookingModel.getBookingByUserId(userId);
 
-      if (seat.length <= 0) {
+      if (result.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          200,
           `User id ${userId} is missing or never booking`,
           null
         );
@@ -227,7 +271,14 @@ module.exports = {
   },
   getDashboard: async (request, response) => {
     try {
-      const { scheduleId, movieId, location } = request.query;
+      let { scheduleId, movieId, location } = request.query;
+
+      console.log(typeof scheduleId);
+      typeof scheduleId === "undefined"
+        ? (scheduleId = "")
+        : (scheduleId = scheduleId);
+      typeof movieId === "undefined" ? (movieId = "") : (movieId = movieId);
+      typeof location === "undefined" ? (location = "") : (location = location);
 
       const result = await bookingModel.getDashboard(
         scheduleId,
@@ -245,6 +296,7 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },

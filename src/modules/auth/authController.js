@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const helperWrapper = require("../../helpers/wrapper");
 const authModel = require("./authModel");
-const { sendMail } = require("../../helpers/mail");
+const helperMailer = require("../../helpers/mail");
 const redis = require("../../config/redis");
 
 module.exports = {
@@ -15,19 +15,7 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10);
       const encryptedPassword = bcrypt.hashSync(password, salt);
 
-      let id;
-      let setData;
-      if (UserCek.length === 0) {
-        id = uuidv4();
-        setData = {
-          id,
-          firstName,
-          lastName,
-          noTelp,
-          email,
-          password: encryptedPassword,
-        };
-      } else {
+      if (UserCek.length > 0) {
         return helperWrapper.response(
           response,
           409,
@@ -36,24 +24,36 @@ module.exports = {
         );
       }
 
+      const setData = {
+        id: uuidv4(),
+        firstName,
+        lastName,
+        noTelp,
+        email,
+        password: encryptedPassword,
+      };
+
       const result = await authModel.register(setData);
 
-      // const setSendEmail = {
-      //   to: email,
-      //   subject: "Confirm your account on tiketjauhar",
-      //   name: firstName,
-      //   code: result.password,
-      //   template: "verificationEmail.html",
-      //   buttonUrl: `https://tiketjauhar.herokuapp.com`,
-      // };
-      // await sendMail(setSendEmail);
+      const setSendEmail = {
+        to: email,
+        subject: "Confirm your account on tiketjauhar",
+        name: firstName,
+        code: result.password,
+        template: "verificationEmail.html",
+        buttonUrl: `google.com`,
+        linkENV: process.env.LINK_BACKEND,
+      };
+      console.log(setSendEmail);
 
+      await helperMailer.sendMail(setSendEmail);
       delete result.password;
+      // delete result.otp;
 
       return helperWrapper.response(
         response,
         200,
-        "Succes Register User",
+        "Succes Register User, check your email and activate account to Log In",
         result
       );
     } catch (error) {
@@ -63,10 +63,9 @@ module.exports = {
   },
   verification: async (request, response) => {
     try {
-      const { code, email } = request.body;
-      const searchdata = await authModel.getUserByEmail(email);
-      let Data;
-      if (searchdata < 1) {
+      const { password } = request.params;
+      const searchdata = await authModel.getUserByPassword(password);
+      if (searchdata.length < 1) {
         return helperWrapper.response(
           response,
           200,
@@ -74,13 +73,14 @@ module.exports = {
           null
         );
       }
-      let result;
-      if (code === searchdata[0].password) {
-        Data = {
-          status: "Active",
-          updateAt: new Date(Date.now()),
-        };
-        result = await authModel.verification(Data, email);
+      if (password === searchdata[0].password) {
+        result = await authModel.verification(password);
+        return helperWrapper.response(
+          response,
+          200,
+          "Success Activation data !",
+          result
+        );
       } else {
         return helperWrapper.response(
           response,
@@ -89,13 +89,6 @@ module.exports = {
           null
         );
       }
-
-      return helperWrapper.response(
-        response,
-        200,
-        "Success Activation data !",
-        result
-      );
     } catch (error) {
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
@@ -160,6 +153,90 @@ module.exports = {
           refreshToken: newRefreshToken,
         });
       });
+    } catch (error) {
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  forgotPassword: async (request, response) => {
+    try {
+      // pasword hash
+      const { email, linkDirect } = request.body;
+      const dataEmail = await authModel.getUserByEmail(email);
+      if (dataEmail.length < 1) {
+        return helperWrapper.response(
+          response,
+          200,
+          "email not registed",
+          null
+        );
+      }
+      const otp = Math.floor(Math.random() * 899999 + 100000);
+
+      const setSendEmail = {
+        to: email,
+        subject: "Forgot Password Verification!",
+        template: "forgotPassword.html",
+        otpKey: otp,
+        linkENV: process.env.LINK_FRONTEND,
+        buttonUrl: otp,
+      };
+      await helperMailer.sendMail(setSendEmail);
+      // activation code
+      const result = await authModel.setOTP(email, otp);
+      return helperWrapper.response(
+        response,
+        200,
+        `email valid check your email box for reset password `,
+        email
+      );
+    } catch (error) {
+      console.log(error);
+      return helperWrapper.response(response, 400, "Bad Request", null);
+    }
+  },
+  resetPassword: async (request, response) => {
+    try {
+      const { keyChangePassword, newPassword, confirmPassword } = request.body;
+      const checkResult = await authModel.getOTP(keyChangePassword);
+      if (checkResult.length <= 0) {
+        return helperWrapper.response(
+          response,
+          404,
+          `your key is not valid`,
+          null
+        );
+      }
+      const id = checkResult[0].id;
+      // eslint-disable-next-line no-restricted-syntax
+      if (newPassword !== confirmPassword) {
+        return helperWrapper.response(
+          response,
+          400,
+          "password Not Match",
+          null
+        );
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(confirmPassword, salt);
+      const setData = {
+        confirmPassword: hash,
+        updatedAt: new Date(Date.now()),
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const data in setData) {
+        if (!setData[data]) {
+          delete setData[data];
+        }
+      }
+      const result = await authModel.updatePassword(id, hash, setData);
+
+      return helperWrapper.response(
+        response,
+        200,
+        "succes reset Password",
+        result
+      );
     } catch (error) {
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
