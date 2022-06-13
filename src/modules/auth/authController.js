@@ -100,23 +100,31 @@ module.exports = {
       const UserCek = await authModel.getUserByEmail(email);
 
       if (UserCek.length > 0) {
-        const PassCek = bcrypt.compareSync(password, UserCek[0].password);
-        if (PassCek) {
-          const payload = UserCek[0];
-          delete payload.password;
-          const token = jwt.sign({ ...payload }, "RAHASIA", {
-            expiresIn: "1h",
-          });
-          const refreshToken = jwt.sign({ ...payload }, "RAHASIABARU", {
-            expiresIn: "24h",
-          });
-          return helperWrapper.response(response, 200, "Success Login", {
-            id: payload.id,
-            token,
-            refreshToken,
-          });
+        const statusCek = UserCek[0].status;
+        if (statusCek === "active") {
+          const PassCek = bcrypt.compareSync(password, UserCek[0].password);
+          if (PassCek) {
+            const payload = UserCek[0];
+            delete payload.password;
+            const token = jwt.sign({ ...payload }, "RAHASIA", {
+              expiresIn: "1h",
+            });
+            const refreshToken = jwt.sign({ ...payload }, "RAHASIABARU", {
+              expiresIn: "24h",
+            });
+            return helperWrapper.response(response, 200, "Success Login", {
+              id: payload.id,
+              token,
+              refreshToken,
+            });
+          }
+          return helperWrapper.response(response, 401, "Password Incorrect");
         }
-        return helperWrapper.response(response, 401, "Password Incorrect");
+        return helperWrapper.response(
+          response,
+          401,
+          "Acount no active, cek your email"
+        );
       }
       return helperWrapper.response(response, 400, "Email not register", null);
     } catch (error) {
