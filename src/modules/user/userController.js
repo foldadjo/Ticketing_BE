@@ -14,7 +14,7 @@ module.exports = {
       if (data.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          200,
           `Data User by id ${id} not found`,
           null
         );

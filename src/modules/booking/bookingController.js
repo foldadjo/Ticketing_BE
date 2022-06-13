@@ -197,7 +197,7 @@ module.exports = {
       if (seat.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          200,
           `your account never booking seat`,
           null
         );
@@ -254,7 +254,7 @@ module.exports = {
       if (result.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          200,
           `Search booking by '${scheduleId}' is not found`,
           null
         );
@@ -287,7 +287,7 @@ module.exports = {
       );
 
       if (result.length <= 0) {
-        return helperWrapper.response(response, 404, `total is 0`, null);
+        return helperWrapper.response(response, 200, `total is 0`, null);
       }
       return helperWrapper.response(
         response,

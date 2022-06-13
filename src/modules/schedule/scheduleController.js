@@ -53,7 +53,7 @@ module.exports = {
       if (result.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          200,
           `Search schedule is not found`,
           null
         );
@@ -78,7 +78,7 @@ module.exports = {
       if (result.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          200,
           `Data by id ${id} not found`,
           null
         );
