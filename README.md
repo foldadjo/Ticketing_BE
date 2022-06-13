@@ -1,4 +1,4 @@
-<h1 align="center">IT jobs Backend</h1>
+<h1 align="center">Ticketing Backend</h1>
 
 ## Contents
 
@@ -14,31 +14,20 @@
 
 ## Link
 
-- Link Heroku : https://itjobsproject.herokuapp.com/
-- Link Cloudinary : "https://res.cloudinary.com/itjobs/image/upload/v1654266716/"
-
-## Project Member
-
-| No. | Project Member         | Role      |
-| --- | ---------------------- | --------- |
-| 1.  | Muhammad Thariq Farsha | PM        |
-| 2.  | Tubagus Manix Hara     | Front End |
-| 3.  | Donny Wahyu            | Front End |
-| 4.  | Abdul Qodir Jaelani    | Front End |
-| 5.  | Mohd.Aflah Fernanda    | Back End  |
-| 6.  | Jauhar Maknun Adib     | Back End  |
+- Link Heroku : https://tiketjauhar.herokuapp.com
+- Link Cloudinary : "https://res.cloudinary.com/fazztrack/image/upload/v1652736197/tiketjauhar"
 
 ## How It Works ?
 
-1. Download Postman Collection [[here](https://drive.google.com/file/d/1NtuQ54laE0NEfXGzNSnziLFf7SW9z1B9/view?usp=sharing)]
+1. Download Postman Collection [[here](https://drive.google.com/drive/folders/1Ex1g-jWWNKC9nYNotq598n5idfvjCkrH?usp=sharing)]
 2. Open Your Postman App
 3. Import Postman Collection
 4. Create Environtments in Postman & Set :
 
 ```bash
 VARIABLE : itjobs
-INITIAL VALUE : https://itjobsproject.herokuapp.com/
-CURRENT VALUE : https://itjobsproject.herokuapp.com/
+INITIAL VALUE : https://tiketjauhar.herokuapp.com
+CURRENT VALUE : https://tiketjauhar.herokuapp.com
 ```
 
 5. Test Request
@@ -50,22 +39,7 @@ CURRENT VALUE : https://itjobsproject.herokuapp.com/
 3. Open email and follow the instruction to verify your FazzPay account
 4. Login and use the API
 
-## Remote Database
-
-```bash
-Hostname = ec2-44-202-197-206.compute-1.amazonaws.com
-Port = 3306
-Username = fw6thariq
-Password = Kdaio83!
-```
-
-note: don't drop or remove table and database
-
-## EndPoint
-
-### Module User Auth
-
-**Used for user authentication**
+### Module Auth
 
 | No. | Method | Endpoint                  | Information                      |
 | --- | ------ | ------------------------- | -------------------------------- |
@@ -76,86 +50,47 @@ note: don't drop or remove table and database
 | 5.  | GET    | /auth/user/verify/:key    | Used for activating new account. |
 | 6.  | PATCH  | /auth/user/resetPassword  | Used for reseting password.      |
 
-### Module Company Auth
+### Module Movie
 
-**Used for company authentication**
+| No. | Method | Endpoint                                                   | Information                                                  |
+| --- | ------ | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| 1.  | GET    | /movie?page=1&limit=8&searchRelease=12&searchName=&sort=   | Used for get all movie for showing in home page.             |
+| 2.  |        | /movie/:movieId                                            | Used for get movie by id                                     |
+| 3.  | PATCH  | /movie/:movieId                                            | Used to change movie by admin.                               |
+| 4.  | CREATE | /movie                                                     | Used to add movie by admin.                                  |
+| 5.  | DEL    | /movie/:movieId                                            | Used to delete movie by admin.                               |
 
-| No. | Method | Endpoint                     | Information                      |
-| --- | ------ | ---------------------------- | -------------------------------- |
-| 1.  | POST   | /auth/company/register       | Used for register new company.   |
-| 2.  |        | /auth/company/login          | Used for login into app.         |
-| 3.  |        | /auth/company/forgotPassword | Used for forgot password.        |
-| 4.  |        | /auth/logout                 | Used for logout from system.     |
-| 5.  | GET    | /auth/company/verify/:key    | Used for activating new account. |
-| 6.  | PATCH  | /auth/company/resetPassword  | Used for reseting password.      |
+### Module Schedule
+
+| No. | Method | Endpoint                                                   | Information                                                  |
+| --- | ------ | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| 1.  | GET    | /schedule?page=1&limit=3&searchMovieId=3&sort=movie.id     | Used for get schedule for showing in detail page.            |
+| 2.  |        | /schedule/:schedulId                                       | Used for get schedule by id                                  |
+| 3.  | PATCH  | /schedule/:scheduleId                                      | Used to change schedule by admin                             |
+| 4.  | CREATE | /schedule                                                  | Used to add schedule by admin                                |
+| 5.  | DEL    | /schedule/:scheduleId                                      | Used to delete schedule by admin                             |
+
+### Module Booking
+
+| No. | Method | Endpoint                                                   | Information                           |
+| --- | ------ | ---------------------------------------------------------- | ------------------------------------- |
+| 1.  | GET    | /booking/id/:bookingId                                     | Used for get Booking by id            |
+| 2.  |        | /booking/user/:userId                                      | Used for get Booking by user id       |
+| 3.  |        | /booking/seat?dateBooking=&timeBooking=&scheduleId=2       | Used for get Booking by filtering     |
+| 4.  |        | /booking/dash?scheduleId=51                                | Used for get dashboard for admin      |
+| 5.  | PATCH  | /booking/:bookingId                                        | Used to change status booking         |
+| 6.  | CREATE | /booking                                                   | Used to booking ticket by user        |
+| 7.  |        | /booking/midtrans-notification                             | Used to get notivication midtrans     |
 
 ### Module User
 
-**Used for any user feature**
-
-| No. | Method | Endpoint                         | Information                                                |
-| --- | ------ | -------------------------------- | ---------------------------------------------------------- |
-| 1.  | GET    | /user?page=&limit=&search=&sort= | Used for get all data user for showing in home page.       |
-| 2.  |        | /user/:userId                    | Used for get user by id                                    |
-| 3.  | PATCH  | /user/updatePassword/:userId     | Used to change password for user.                          |
-| 4.  |        | /user/updateProfile/:userId      | Used to change any info for example name and phone number. |
-| 5.  |        | /user/updateImage/:userId        | Used to change profile picture for user.                   |
-| 6.  | DEL    | /user/image/:userId              | Used to delete profile picture for user.                   |
-
-### Module Company
-
-**Used for any company feature**
-
-| No. | Method | Endpoint                           | Information                                                |
-| --- | ------ | ---------------------------------- | ---------------------------------------------------------- |
-| 1.  | GET    | /company/:userId                   | Used for get user by id                                    |
-| 2.  | PATCH  | /company/updatePassword/:companyId | Used to change password for user.                          |
-| 3.  |        | /company/updateProfile/:companyId  | Used to change any info for example name and phone number. |
-| 4.  |        | /company/updateImage/:companyId    | Used to change profile picture for user.                   |
-| 5.  | DEL    | /company/image/:companyId          | Used to delete profile picture for user.                   |
-
-### Module Experience
-
-**Used for get and search user experience**
-
-| No. | Method | Endpoint                  | Information                           |
-| --- | ------ | ------------------------- | ------------------------------------- |
-| 1.  | GET    | /experience/:userId       | Used for get experience by user by id |
-| 2.  | POST   | /experience/:userId       | Used to create experience user        |
-| 3.  | PATCH  | /experience/:experienceId | Used for udpate experience user       |
-| 4.  | DEL    | /experience/:experienceId | Used to delete experience for user    |
-
-### Module Skill
-
-**Used for get and search user by skill**
-
-| No. | Method | Endpoint        | Information                      |
-| --- | ------ | --------------- | -------------------------------- |
-| 1.  | GET    | /skill/:userId  | Used for get skill by user by id |
-| 2.  | POST   | /skill/:userId  | Used to create user skill        |
-| 3.  | DEL    | /skill/:skillId | Used to delete skill for user    |
-
-### Module Experience
-
-**Used for get and search user experience**
-
-| No. | Method | Endpoint            | Information                           |
-| --- | ------ | ------------------- | ------------------------------------- |
-| 1.  | GET    | /portofolio/:userId | Used for get portofolio by user by id |
-| 2.  | POST   | /portofolio/:userId | Used to create portofolio user        |
-| 3.  | PATCH  | /portofolio/:id     | Used for udpate portofolio user       |
-| 4.  | DEL    | /portofolio/:id     | Used to delete portofolio for user    |
-
-### Module Hire
-
-**Used for company to hire user**
-
-| No. | Method | Endpoint         | Information                     |
-| --- | ------ | ---------------- | ------------------------------- |
-| 1.  | GET    | /hire/:userId    | Used for get hire by user by id |
-| 2.  | POST   | /hire/:companyId | Used to create user hire        |
-| 3.  | DEL    | /hire/:hireId    | Used to delete hire for company |
-
+| No. | Method | Endpoint                   | Information                        |
+| --- | ------ | ---------------------------| -----------------------------------|
+| 1.  | GET    | /user/:userId              | Used for get user by id            |
+| 2.  | PATCH  | /user/profile/:userId      | Used to change profile user        |
+| 3.  |        | /user/password/:userId     | Used to change password user       |
+| 4.  |        | /user/image/:userId        | Used to change image user          |
+| 5.  | DEL    | /user/delimage/:userId     | Used to delete image user          |
 ### JSON Format
 
 The JSON format of the status pages can be often preferable, for example when the tooling or integration to other systems is easier to achieve via a common data format.
@@ -169,36 +104,29 @@ The equivalent to the status key form the plain format is a status key in the ro
 ```
 {
     "status": 200,
-    "msg": "succes get data",
+    "msg": "Success get data !",
     "data": [
         {
-            "id": "6f349403-4c00-4af8-8998-d14abc27906d",
-            "fullName": "Cinta Laura",
-            "email": "cinta@gmail.com",
-            "password": "$2b$10$xr7.DfLCOkffjgiTvDOs3..8jbJhggezK6RSS7/xK6yslScKhSXT6",
-            "noTelp": 987654321,
-            "address": "Semarang",
-            "role": "freelance",
-            "description": "web developer at tokopedia, experience as web developer for 2 years,  able to be fullstack,front end or back end",
-            "field": "web developer",
-            "image": "profiles/hufghlpfe9vzhzfnzwlt.jpeg",
-            "socialMedia": "cintacinta123,cintalaura,cintalaura",
-            "status": "notActive",
-            "UserOTP": null,
-            "createdAt": "2022-06-04T11:07:33.000Z",
-            "updatedAt": "2022-06-04T18:15:49.000Z",
-            "skill": [
-                "HTML"
-            ]
-        },
-    ],
-    "pagination": {
-        "dataSearchFound": 3,
-        "page": 1,
-        "totalPage": 3,
-        "limit": 10,
-        "totalData": 23
-    }
+            "id": 2,
+            "name": "umma",
+            "category": "Horror",
+            "releaseDate": "2022-03-17T17:00:00.000Z",
+            "image": "tiketjauhar/movie/utg32zovu7w3gjogmjyi",
+            "cast": "Sandra Oh, Odeya Rush, Dermot Mulroney, Fivel Stewart, Tom Yi, Danielle K. Golden, MeeWha Alana Lee, Hana Marie Kim, Mark Kirksey",
+            "director": "Iris K. Shim",
+            "duration": "83 minute",
+            "synopsis": "A Korean immigrant, Amanda, and her daughter Chris live on a rural farm, raising bees and chickens, and living without modern technology. When Amanda receives the cremated ashes of her deceased estranged mother from her birth country, it unleashes a vicio",
+            "createdAt": "2022-03-24T05:45:11.000Z",
+            "updateAt": "2022-03-24T06:44:54.000Z",
+            "movieId": 1,
+            "premiere": "Ebu.Id",
+            "price": 50000,
+            "location": "Tangerang",
+            "dateStart": "2021-12-31T17:00:00.000Z",
+            "dateEnd": "2022-01-31T17:00:00.000Z",
+            "time": "19:00,13:00"
+        }
+    ]
 }
 
 ```
@@ -209,15 +137,8 @@ The equivalent to the status key form the plain format is a status key in the ro
 
 {
     "status": 200,
-    "msg": "succes get data",
-    "data": [],
-    "pagination": {
-        "dataSearchFound": 30,
-        "page": 1,
-        "totalPage": 3,
-        "limit": 10,
-        "totalData": 0
-    }
+    "msg": "User id 2accbfb4 is missing or never booking",
+    "data": null
 }
 
 ```
@@ -227,17 +148,7 @@ The equivalent to the status key form the plain format is a status key in the ro
 ```
 {
     "status": 404,
-    "msg": "Data by id 62652aff-46fe-47c5-92c5-55cfd206c5b not found",
+    "msg": "Data by id 65 not found",
     "data": null
 }
 ```
-
-### itJobs-Team Project
-
-> All Members of Default Team
-
-|                                  **Team Leader** <br> Muhammad Thariq Farsha                                  |                                  **Front-End Developer**<br> Tubagus Manix Hara                                  |                                       **Front-End Developer** <br> Donny Wahyu                                       |                               **Front-End Developer** <br> Abdul Qodir Jaelani                                |                                  **Back-End Developer** <br> Jauhar Maknun Adib                                   |                                     **Back-End Developer**<br>Mohd.Aflah Fernandaa                                     |
-| :-----------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: |
-| [![Team Leader Image](https://avatars.githubusercontent.com/u/85364229?v=4)](https://github.com/thariqfarsha) | [![Back-End Developer Image](https://avatars.githubusercontent.com/u/101084286?v=4)](https://github.com/tbmanix) | [![Front-End Developer Image](https://avatars.githubusercontent.com/u/74863390?v=4)](https://github.com/donny17-bit) | [![Back-End Developer Image](https://avatars.githubusercontent.com/u/97077814?v=4)](https://github.com/Qxtlp) | [![Back-End Developer Image](https://avatars.githubusercontent.com/u/101084359?v=4)](https://github.com/foldadjo) | [![Back-End Developer Image](https://avatars.githubusercontent.com/u/101084909?v=4)](https://github.com/aflahfernanda) |
-|        <a href="https://github.com/thariqfarsha" target="_blank">`https://github.com/thariqfarsha`</a>        |              <a href="https://github.com/tbmanix" target="_blank">`https://github.com/tbmanix`</a>               |            <a href="https://github.com/donny17-bit" target="_blank">`https://github.com/donny17-bit`</a>             |               <a href="https://github.com/Qxtlp" target="_blank">`https://github.com/Qxtlp`</a>               |              <a href="https://github.com/foldadjo" target="_blank">`https://github.com/foldadjo`</a>              |           <a href="https://github.com/aflahfernanda" target="_blank">`https://github.com/aflahfernanda`</a>            |
-
