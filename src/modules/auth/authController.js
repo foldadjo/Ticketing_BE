@@ -173,7 +173,7 @@ module.exports = {
       if (dataEmail.length < 1) {
         return helperWrapper.response(
           response,
-          200,
+          404,
           "email not registed",
           null
         );
