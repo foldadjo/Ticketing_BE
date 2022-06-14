@@ -209,7 +209,7 @@ module.exports = {
       if (checkResult.length <= 0) {
         return helperWrapper.response(
           response,
-          404,
+          400,
           `your key is not valid`,
           null
         );
