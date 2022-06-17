@@ -144,9 +144,9 @@ module.exports = {
       const { name, category, synopsis, cast, director, duration } =
         request.body;
       let image;
-      const type = request.file.mimetype.split("/")[1];
 
       if (request.file) {
+        const type = request.file.mimetype.split("/")[1];
         if (type !== "jpeg" && type !== "jpg" && type !== "png") {
           await cloudinary.uploader.destroy(
             `${request.file.filename}`,
@@ -213,6 +213,7 @@ module.exports = {
         result
       );
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
