@@ -106,7 +106,7 @@ module.exports = {
       } = request.body;
       let image;
       if (request.file) {
-        if (request.file.size > 1000000) {
+        if (request.file.size > 5000000) {
           await cloudinary.uploader.destroy(
             `${request.file.filename}`,
             (delresult) => {
@@ -176,7 +176,7 @@ module.exports = {
             null
           );
         }
-        if (request.file.size > 1000000) {
+        if (request.file.size > 5000000) {
           await cloudinary.uploader.destroy(
             `${request.file.filename}`,
             (delresult) => {

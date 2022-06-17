@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const maxSize = 10048576;
+const maxSize = 5048576;
 
 const upload = multer({
   storage,
@@ -29,8 +29,8 @@ const upload = multer({
     }
 
     const fileSize = parseInt(req.headers["content-length"]);
-    if (fileSize > 10048576) {
-      return cb(new Error("file must be under 10 MB"));
+    if (fileSize > 5048576) {
+      return cb(new Error("file must be under 5 MB"));
     }
     cb(null, true);
   },
