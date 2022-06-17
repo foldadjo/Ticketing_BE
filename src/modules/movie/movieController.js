@@ -95,8 +95,15 @@ module.exports = {
   },
   createMovie: async (request, response) => {
     try {
-      const { name, category, synopsis, cast, director, duration } =
-        request.body;
+      const {
+        name,
+        category,
+        synopsis,
+        releaseDate,
+        cast,
+        director,
+        duration,
+      } = request.body;
       let image;
       if (request.file) {
         if (request.file.size > 1000000) {
@@ -123,6 +130,7 @@ module.exports = {
         category,
         synopsis,
         cast,
+        releaseDate,
         director,
         duration,
         image,
@@ -141,8 +149,15 @@ module.exports = {
   updateMovie: async (request, response) => {
     try {
       const { id } = request.params;
-      const { name, category, synopsis, cast, director, duration } =
-        request.body;
+      const {
+        name,
+        category,
+        synopsis,
+        releaseDate,
+        cast,
+        director,
+        duration,
+      } = request.body;
       let image;
 
       if (request.file) {
@@ -191,6 +206,7 @@ module.exports = {
         category,
         synopsis,
         cast,
+        releaseDate,
         director,
         duration,
         image,
