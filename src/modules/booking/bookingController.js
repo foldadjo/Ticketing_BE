@@ -25,6 +25,7 @@ module.exports = {
       const statusUsed = "Active";
 
       const setData = {
+        id: uuidv4(),
         userId,
         scheduleId,
         dateBooking,
