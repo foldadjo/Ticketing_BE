@@ -46,7 +46,7 @@ module.exports = {
         await bookingModel.createBookingseat(seatData);
         return seat;
       });
-      const result = { bookingId, ...setData };
+      const result = { setData };
 
       const setDataMidtrans = {
         id: bookingId,
@@ -61,7 +61,6 @@ module.exports = {
         redirectUrl: resultMidtrans.redirect_url,
       });
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -211,7 +210,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
@@ -297,7 +295,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
