@@ -81,7 +81,7 @@ module.exports = {
           const setData = {
             paymentMethod: result.payment_type,
             statusPayment: "notSuccess",
-            updatedAt: new Date(Date.now()),
+            updateAt: new Date(Date.now()),
           };
           const resultUpdate = await bookingModel.updateStatusBooking(
             orderId,
@@ -98,7 +98,7 @@ module.exports = {
           const setData = {
             paymentMethod: paymentType,
             statusPayment: "success",
-            updatedAt: new Date(Date.now()),
+            updateAt: new Date(Date.now()),
           };
           const resultUpdate = await bookingModel.updateStatusBooking(
             orderId,
@@ -115,7 +115,7 @@ module.exports = {
         const setData = {
           paymentMethod: result.payment_type,
           statusPayment: "success",
-          updatedAt: new Date(Date.now()),
+          updateAt: new Date(Date.now()),
         };
         const resultUpdate = await bookingModel.updateStatusBooking(
           orderId,
@@ -131,7 +131,7 @@ module.exports = {
         const setData = {
           paymentMethod: paymentType,
           statusPayment: "notSuccess",
-          updatedAt: new Date(Date.now()),
+          updateAt: new Date(Date.now()),
         };
         const resultUpdate = await bookingModel.updateStatusBooking(
           orderId,
@@ -150,7 +150,7 @@ module.exports = {
         const setData = {
           paymentMethod: paymentType,
           statusPayment: "notSuccess",
-          updatedAt: new Date(Date.now()),
+          updateAt: new Date(Date.now()),
         };
         const resultUpdate = await bookingModel.updateStatusBooking(
           orderId,
@@ -166,7 +166,7 @@ module.exports = {
         const setData = {
           paymentMethod: paymentType,
           statusPayment: "notSuccess",
-          updatedAt: new Date(Date.now()),
+          updateAt: new Date(Date.now()),
         };
         const resultUpdate = await bookingModel.updateStatusBooking(
           orderId,
@@ -180,6 +180,7 @@ module.exports = {
         );
       }
     } catch (error) {
+      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
