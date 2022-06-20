@@ -55,11 +55,24 @@ module.exports = {
         }
       );
     }),
-  getBookingByUserId: (userId) =>
+  getCountBooking: (userId) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT (*) AS total FROM booking WHERE userId='${userId}' AND statusPayment = 'success'`,
+        (error, result) => {
+          if (!error) {
+            resolve(result[0].total);
+          } else {
+            reject(new Error(error.sqlMessage));
+          }
+        }
+      );
+    }),
+  getBookingByUserId: (userId, limit, offset) =>
     new Promise((resolve, reject) => {
       connection.query(
         `SELECT * FROM movie INNER JOIN schedule ON movie.id = schedule.movieId INNER JOIN booking ON schedule.id = booking.scheduleId 
-        WHERE userId = '${userId}' AND statusPayment = 'success' ORDER BY booking.createdAt DESC`,
+        WHERE userId = '${userId}' AND statusPayment = 'success' ORDER BY booking.createdAt DESC LIMIT ${limit} OFFSET ${offset};`,
         (error, result) => {
           if (!error) {
             resolve(result);

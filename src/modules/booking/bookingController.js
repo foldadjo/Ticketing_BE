@@ -217,7 +217,29 @@ module.exports = {
   getBookingByUserId: async (request, response) => {
     try {
       const { userId } = request.params;
-      const result = await bookingModel.getBookingByUserId(userId);
+      let { page, limit } = request.query;
+      // default value
+      page = isNaN(page) || page == 0 ? (page = 1) : (page = Number(page));
+      limit =
+        isNaN(limit) || limit == 0 ? (limit = 2) : (limit = Number(limit));
+
+      const totalData = await bookingModel.getCountBooking(userId);
+
+      const offset = page * limit - limit;
+      const totalPage = Math.ceil(totalData / limit);
+
+      const pageInfo = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+      };
+
+      const result = await bookingModel.getBookingByUserId(
+        userId,
+        limit,
+        offset
+      );
 
       if (result.length <= 0) {
         return helperWrapper.response(
@@ -232,7 +254,8 @@ module.exports = {
         response,
         200,
         `Success get data booking by user id ${userId}`,
-        result
+        result,
+        pageInfo
       );
     } catch (error) {
       console.log(error);
