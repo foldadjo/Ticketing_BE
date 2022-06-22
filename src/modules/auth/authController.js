@@ -64,7 +64,7 @@ module.exports = {
   verification: async (request, response) => {
     try {
       const { id } = request.params;
-      const searchdata = await authModel.getUserByPassword(id);
+      const searchdata = await authModel.getUserById(id);
       if (searchdata.length < 1) {
         return helperWrapper.response(
           response,

@@ -29,11 +29,11 @@ module.exports = {
         }
       );
     }),
-  getUserByPassword: (password) =>
+  getUserById: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        "SELECT * FROM user WHERE password = ?",
-        password,
+        "SELECT * FROM user WHERE id = ?",
+        id,
         (error, result) => {
           if (!error) {
             resolve(result);
@@ -43,14 +43,14 @@ module.exports = {
         }
       );
     }),
-  verification: (password) =>
+  verification: (id) =>
     new Promise((resolve, reject) => {
       connection.query(
-        `UPDATE user SET status='active' WHERE password="${password}"`,
+        `UPDATE user SET status='active' WHERE id="${id}"`,
         (error) => {
           if (!error) {
             const newResult = {
-              code: password,
+              code: id,
             };
             resolve(newResult);
           } else {
