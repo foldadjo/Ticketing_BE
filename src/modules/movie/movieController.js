@@ -137,17 +137,16 @@ module.exports = {
         image,
       };
       const result = await movieModel.createMovie(setData);
-      console.log(result);
       admin.messaging().send({
-        token:
-          "cAu9dk-iSbiAR33czQDjaj:APA91bG-mJEszene4L9Mtk3-bijFWmBfOMU6papB9-73CUuJWNcdY_w9Nzaf66Tn_AH3Im6WM9Z9QoQXK8JY2tyer34atprrB3ww3CDbMRRx5EGqfvOh0wNUe4BMsDnN1wt37p6Zz8oc",
-        // topic: "new-movie",
+        // token:
+        //   "cAu9dk-iSbiAR33czQDjaj:APA91bG-mJEszene4L9Mtk3-bijFWmBfOMU6papB9-73CUuJWNcdY_w9Nzaf66Tn_AH3Im6WM9Z9QoQXK8JY2tyer34atprrB3ww3CDbMRRx5EGqfvOh0wNUe4BMsDnN1wt37p6Zz8oc",
+        topic: "new-movie",
         notification: {
           title: "new movie will be coming",
           body: `film ${name} akan hadir dan bisa segera dibeli tiketnya di ticketing app ${
             releaseDate ? `pada tanggal ${releaseDate}` : "segera"
           }`,
-          image: `https://res.cloudinary.com/fazztrack/image/upload/v1655830364/${result.image}`,
+          image: `${process.env.LINK_CLOUDINARY}${result.image}`,
         },
       });
       return helperWrapper.response(
@@ -157,7 +156,6 @@ module.exports = {
         result
       );
     } catch (error) {
-      console.log(error);
       return helperWrapper.response(response, 400, "Bad Request", null);
     }
   },
