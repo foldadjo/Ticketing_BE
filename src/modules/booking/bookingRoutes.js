@@ -28,7 +28,7 @@ Router.post(
 );
 Router.patch(
   "/:id",
-  middlewareAuth.isAdmin,
+  // middlewareAuth.isAdmin,
   bookingController.updateStatusBooking
 );
 Router.post(
