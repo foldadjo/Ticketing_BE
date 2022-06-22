@@ -39,7 +39,7 @@ module.exports = {
         to: email,
         subject: "Confirm your account on tiketjauhar",
         name: firstName,
-        code: result.password,
+        code: result.id,
         template: "verificationEmail.html",
         buttonUrl: `google.com`,
         linkENV: process.env.LINK_BACKEND,
@@ -63,8 +63,8 @@ module.exports = {
   },
   verification: async (request, response) => {
     try {
-      const { password } = request.params;
-      const searchdata = await authModel.getUserByPassword(password);
+      const { id } = request.params;
+      const searchdata = await authModel.getUserByPassword(id);
       if (searchdata.length < 1) {
         return helperWrapper.response(
           response,
@@ -73,8 +73,8 @@ module.exports = {
           null
         );
       }
-      if (password === searchdata[0].password) {
-        result = await authModel.verification(password);
+      if (id === searchdata[0].id) {
+        result = await authModel.verification(id);
         return helperWrapper.response(
           response,
           200,
