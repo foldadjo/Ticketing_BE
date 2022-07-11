@@ -162,22 +162,8 @@ module.exports = {
           "succes get data !",
           resultUpdate
         );
-      } else if (transactionStatus === "notSuccess") {
-        const setData = {
-          paymentMethod: paymentType,
-          statusPayment: "notSuccess",
-          updateAt: new Date(Date.now()),
-        };
-        const resultUpdate = await bookingModel.updateStatusBooking(
-          orderId,
-          setData
-        );
-        return helperWrapper.response(
-          response,
-          200,
-          "succes get data !",
-          resultUpdate
-        );
+      } else if (transactionStatus === "pending") {
+        return helperWrapper.response(response, 200, "succes get data !", null);
       }
     } catch (error) {
       console.log(error);
